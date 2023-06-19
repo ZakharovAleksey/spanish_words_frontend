@@ -17,10 +17,10 @@
               </v-tooltip>
             </template>
               <v-combobox
-                  label="Choose the general topic..."
-                  v-model="selected_topic"
-                  :items="topics"
-                  :loading="topic_loading"
+                  label="Choose the google sheet..."
+                  v-model="selected_gsheet"
+                  :items="gsheets"
+                  :loading="gsheets_loading"
                   clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
@@ -337,10 +337,10 @@ export default {
   data() {
     return {
       is_parameters_select_disabled: false,
-      // Topic
-      selected_topic: null,
-      topics: [],
-      topic_loading: true,
+      // Google sheet -related fields
+      selected_gsheet: null,
+      gsheets: [],
+      gsheets_loading: true,
       // Theme
       selected_theme: null,
       themes: [],
@@ -384,16 +384,16 @@ export default {
     // Upload the list of all possible spreadsheets
     axios
         .get('/api/spreadsheet/titles/')
-        .then(response => (this.topics = response.data))
+        .then(response => (this.gsheets = response.data))
         .catch(error => {
           useToast().error(consts.kServerNotRespondError)
           console.log(error)
         })
-        .finally(() => (this.topic_loading = false))
+        .finally(() => (this.gsheets_loading = false))
   },
   // Object, required to minitor the state of the elements on the page
   watch: {
-    selected_topic : function () {
+    selected_gsheet : function () {
       // Drop all child inputs
       this.selected_theme = null
       this.selected_sub_theme = null
@@ -409,15 +409,15 @@ export default {
   },
   methods: {
     async getThemes() {
-      if (this.topics.length === 0)
+      if (this.gsheets.length === 0)
         return
 
-      if (this.topics.includes(this.selected_topic)) {
+      if (this.gsheets.includes(this.selected_gsheet)) {
         this.theme_loading = true
         axios
             .get('/api/worksheet/columns/', {
               params: {
-                title: this.selected_topic
+                title: this.selected_gsheet
               }
             })
             .then(response => (this.themes = response.data))
@@ -429,7 +429,7 @@ export default {
       }
     },
     async getSubThemes() {
-      if (this.topics.length === 0 || this.themes.length === 0)
+      if (this.gsheets.length === 0 || this.themes.length === 0)
         return
 
       // Get IDs of all themes
@@ -441,7 +441,7 @@ export default {
         axios
             .get('/api/worksheet/colums/unique_values/', {
               params: {
-                title: this.selected_topic,
+                title: this.selected_gsheet,
                 column_id: this.selected_theme
               }
             })
@@ -465,7 +465,7 @@ export default {
       axios
           .get('/api/worksheet/random_values/', {
             params: {
-              title: this.selected_topic,
+              title: this.selected_gsheet,
               filter_column_id: this.selected_theme,
               template: this.selected_sub_theme,
               column_ids: '0,1',
@@ -477,7 +477,7 @@ export default {
             // TODO: on the backend side put everything to the dict {word, translation, color, icon}
             for(const [key, value] of Object.entries(response.data)) {
               const column = parseInt(key) === 0 ? consts.Column.SPANISH : consts.Column.ENGLISH
-              this.words[column] = value.map((v) => ({ word: v, color: 'green', icon: 'mdi-emoticon' }))
+              this.words[column] = value.map((v) => ({ word: v, color: consts.Color.GOOD, icon: 'mdi-emoticon' }))
             }
 
             // Create map for translation: <word> - <translation>
@@ -537,7 +537,7 @@ export default {
       this.is_parameters_select_disabled = false
     },
     isPreRequestRequirementsSatisfied(need_topic = false, need_theme = false, need_sub_theme = false) {
-      if (need_topic && this.selected_topic === null) {
+      if (need_topic && this.selected_gsheet === null) {
         useToast().info(consts.kInputDataIsMissed + 'google sheet')
         return false
       }
