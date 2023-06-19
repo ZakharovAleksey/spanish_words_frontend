@@ -191,9 +191,9 @@
               </v-row>
               <div v-if="!words_loading && Object.keys(words).length !== 0">
                 <v-row cols="12" align-content="center" >
-                  <p class="my-2 text-h6">Your progress: {{Math.round(current_id / words_order.length * 100)}} %</p>
+                  <p class="my-2 text-h6">Your progress: {{ Math.round(current_word_id / words_queue.length * 100) }} %</p>
                   <v-progress-linear
-                      v-model="current_id"
+                      v-model="current_word_id"
                       :max="selected_number"
                       :height="12"
                       rounded class="pa-0 mb-10"
@@ -309,7 +309,7 @@
             :readonly="true"
         ></v-rating>
           <p class="px-3 text-subtitle-1 text-center">
-            Great job! <br/> You remember {{success_percent / 5 * 100}} % of the words, are you sure, you need this practice?)
+            Great job! <br/> {{generateUserMessageOnLessonComplete()}}
           </p>
         </div>
       </v-card-text>
@@ -352,32 +352,38 @@ export default {
       // Number of the words
       selected_number: consts.kDefaultWordNumberChoices[0],
       numbers: consts.kDefaultWordNumberChoices,
-      // Checkbox
+      // Checkbox for lesson type
       check_by_typing: true,
       // Language
       languages: [consts.Column.ENGLISH, consts.Column.SPANISH],
       selected_language: consts.Column.ENGLISH,
-      // Words to repeat
+      // Words to repeat during the lesson
       words: {},
       forgotten_words: [],
       words_loading: false,
       word_to_translation_pairs: new Map(),
+
+      // Fields required for the lesson type: type the words
+      // TODO: make words queue: Queue type
+      words_queue: [],
+      current_word_id: 0,
+      current_word_to_check: null,
+      current_user_input: null,
+      // Lock the possibility to change user input after submit
+      post_validation_lock: false,
+      is_user_input_correct: true,
+      // Error message, used to show incorrect user input
+      current_error_message: '',
+      // Success message, used to show correct user input
+      current_message: '',
+
       // Post-complete lesson
+      // Percent of correct responses in range [0, 1]
       success_percent: 0,
       overlay: false,
       is_lesson_complete: false,
       lesson_icon: null,
-      lesson_color: null,
-      // Other
-      words_order: [],
-      current_id: 0,
-
-      current_word_to_check: null,
-      current_user_input: null,
-      post_validation_lock: false,
-      is_user_input_correct: true,
-      current_error_message: '',
-      current_message: ''
+      lesson_color: null
     }
   },
   async beforeMount() {
@@ -489,9 +495,9 @@ export default {
             }
 
             if (!this.check_by_typing) {
-              this.words_order = [...response.data[key_column]]
+              this.words_queue = [...response.data[key_column]]
               this.forgotten_words = [...response.data[key_column]]
-              this.current_word_to_check = this.words_order[this.current_id]
+              this.current_word_to_check = this.words_queue[this.current_word_id]
             }
           })
           .catch(error => {
@@ -536,6 +542,16 @@ export default {
       this.is_lesson_complete = true
       this.is_parameters_select_disabled = false
     },
+    generateUserMessageOnLessonComplete(){
+      const percent = this.success_percent / consts.kMaxRating * 100.
+      const intro = `You remember ${percent}% of the words.`
+      if (percent > consts.MinSuccessThresholds.GOOD) {
+        return intro + consts.LessonResultMessages.GOOD
+      } else if (percent > consts.MinSuccessThresholds.MEDIUM) {
+        return intro + consts.LessonResultMessages.MEDIUM
+      }
+      return intro + consts.LessonResultMessages.BAD
+    },
     isPreRequestRequirementsSatisfied(need_topic = false, need_theme = false, need_sub_theme = false) {
       if (need_topic && this.selected_gsheet === null) {
         useToast().info(consts.kInputDataIsMissed + 'google sheet')
@@ -560,8 +576,8 @@ export default {
       this.is_lesson_complete = false
 
       // Clean up for the second type of the lesson: with typing
-      this.words_order = []
-      this.current_id = 0
+      this.words_queue = []
+      this.current_word_id = 0
       this.current_word_to_check = null
       this.current_user_input = null
       this.post_validation_lock = false
@@ -605,14 +621,14 @@ export default {
       }
 
       // Check if this was the last word and the game is complete
-      if (this.current_id === this.words_order.length - 1) {
+      if (this.current_word_id === this.words_queue.length - 1) {
         this.onCompleteClick()
         return
       }
 
       // Go to the next word
-      this.current_id++
-      this.current_word_to_check = this.words_order[this.current_id]
+      this.current_word_id++
+      this.current_word_to_check = this.words_queue[this.current_word_id]
 
       this.current_user_input = ''
       this.is_user_input_correct = ''
