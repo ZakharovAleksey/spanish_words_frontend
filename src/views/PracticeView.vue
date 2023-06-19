@@ -331,16 +331,8 @@
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
+import * as consts from '@/js/constants'
 // Sort of enum. TODO: move the the constants file with all related methods
-const Column = { ENGLISH: 'English', SPANISH: 'Spanish' }
-const MinSuccessThresholds = { GOOD: 80, MEDIUM: 40 }
-const Color = { GOOD: 'green', MEDIUM: 'yellow', BAD: 'red' }
-const WordStatusMdiIcon = { REMEMBERED: 'mdi-emoticon', FORGOTTEN: 'mdi-emoticon-cry' }
-const LessonResultMdiIcon = {GOOD: 'mdi-robot-happy-outline', MEDIUM: 'mdi-meditation', BAD: 'mdi-emoticon-poop'}
-
-const kMaxRating = 5
-const kServerNotRespondError = 'Could not fetch the data: server does not respond.\nPlease, try again later...'
-const kInputDataIsMissed = 'Required input field is missed: '
 
 export default {
   data() {
@@ -364,8 +356,8 @@ export default {
       // Checkbox
       check_by_typing: true,
       // Language
-      languages: [Column.ENGLISH, Column.SPANISH],
-      selected_language: Column.ENGLISH,
+      languages: [consts.Column.ENGLISH, consts.Column.SPANISH],
+      selected_language: consts.Column.ENGLISH,
       // Words to repeat
       words: {},
       forgotten_words: [],
@@ -395,7 +387,7 @@ export default {
         .get('/api/spreadsheet/titles/')
         .then(response => (this.topics = response.data))
         .catch(error => {
-          useToast().error(kServerNotRespondError)
+          useToast().error(consts.kServerNotRespondError)
           console.log(error)
         })
         .finally(() => (this.topic_loading = false))
@@ -431,7 +423,7 @@ export default {
             })
             .then(response => (this.themes = response.data))
             .catch(error => {
-              useToast().error(kServerNotRespondError)
+              useToast().error(consts.kServerNotRespondError)
               console.log(error)
             })
             .finally(() => (this.theme_loading = false))
@@ -456,7 +448,7 @@ export default {
             })
             .then(response => (this.sub_themes = response.data))
             .catch(error => {
-              useToast().error(kServerNotRespondError)
+              useToast().error(consts.kServerNotRespondError)
               console.log(error)
             })
             .finally(() => (this.sub_theme_loading = false))
@@ -485,12 +477,12 @@ export default {
             // Parse words to make chips from them
             // TODO: on the backend side put everything to the dict {word, translation, color, icon}
             for(const [key, value] of Object.entries(response.data)) {
-              const column = parseInt(key) === 0 ? Column.SPANISH : Column.ENGLISH
+              const column = parseInt(key) === 0 ? consts.Column.SPANISH : consts.Column.ENGLISH
               this.words[column] = value.map((v) => ({ word: v, color: 'green', icon: 'mdi-emoticon' }))
             }
 
             // Create map for translation: <word> - <translation>
-            const key_column = this.selected_language === Column.SPANISH ? 0 : 1
+            const key_column = this.selected_language === consts.Column.SPANISH ? 0 : 1
             const value_column = key_column === 1 ? 0 : 1
             const length = response.data[key_column].length
             for(let i = 0; i < length; ++i) {
@@ -503,7 +495,7 @@ export default {
               this.current_word_to_check = this.words_order[this.current_id]
             }
           })
-          .catch(error => (useToast().error(kServerNotRespondError)))
+          .catch(error => (useToast().error(consts.kServerNotRespondError)))
           .finally(() => (this.words_loading = false))
     },
     // Forgotten words
@@ -517,20 +509,20 @@ export default {
         this.forgotten_words.push(word)
       }
 
-      item.color = item.color === Color.GOOD ? Color.BAD : Color.GOOD
-      item.icon = item.icon === WordStatusMdiIcon.REMEMBERED ?
-          WordStatusMdiIcon.FORGOTTEN :
-          WordStatusMdiIcon.REMEMBERED
+      item.color = item.color === consts.Color.GOOD ? consts.Color.BAD : consts.Color.GOOD
+      item.icon = item.icon === consts.WordStatusMdiIcon.REMEMBERED ?
+          consts.WordStatusMdiIcon.FORGOTTEN :
+          consts.WordStatusMdiIcon.REMEMBERED
     },
     // Results
     onCompleteClick(){
       // Calculate percent of correct answers
       const numerator = this.word_to_translation_pairs.size - this.forgotten_words.length
       const denominator = this.word_to_translation_pairs.size
-      this.success_percent = (numerator / denominator).toFixed(1) * kMaxRating
+      this.success_percent = (numerator / denominator).toFixed(1) * consts.kMaxRating
 
       // Generate visual lesson results
-      const percent = this.success_percent / kMaxRating * 100
+      const percent = this.success_percent / consts.kMaxRating * 100
       const data = this.chooseLessonIcons(percent)
       this.lesson_icon = data.icon
       this.lesson_color = data.color
@@ -544,15 +536,15 @@ export default {
     },
     isPreRequestRequirementsSatisfied(need_topic = false, need_theme = false, need_sub_theme = false) {
       if (need_topic && this.selected_topic === null) {
-        useToast().info(kInputDataIsMissed + 'google sheet')
+        useToast().info(consts.kInputDataIsMissed + 'google sheet')
         return false
       }
       if (need_theme && this.selected_theme === null) {
-        useToast().info(kInputDataIsMissed + 'words filtering key')
+        useToast().info(consts.kInputDataIsMissed + 'words filtering key')
         return false
       }
       if (need_sub_theme && this.selected_sub_theme === null) {
-        useToast().info(kInputDataIsMissed + 'words category')
+        useToast().info(consts.kInputDataIsMissed + 'words category')
         return false
       }
 
@@ -576,13 +568,13 @@ export default {
       this.current_message = ''
     },
     chooseLessonIcons(success){
-      if(success > MinSuccessThresholds.GOOD) {
-        return { icon: LessonResultMdiIcon.GOOD, color: Color.GOOD}
+      if(success > consts.MinSuccessThresholds.GOOD) {
+        return { icon: consts.LessonResultMdiIcon.GOOD, color: consts.Color.GOOD}
       }
-      if (success > MinSuccessThresholds.MEDIUM) {
-        return { icon: LessonResultMdiIcon.MEDIUM, color: Color.MEDIUM}
+      if (success > consts.MinSuccessThresholds.MEDIUM) {
+        return { icon: consts.LessonResultMdiIcon.MEDIUM, color: consts.Color.MEDIUM}
       }
-      return { icon: LessonResultMdiIcon.BAD, color: Color.BAD}
+      return { icon: consts.LessonResultMdiIcon.BAD, color: consts.Color.BAD}
     },
     checkTranslation() {
       // TODO: On the second 'enter' input we go to the next word
