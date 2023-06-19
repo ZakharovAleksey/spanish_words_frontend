@@ -21,7 +21,7 @@
                   v-model="selected_topic"
                   :items="topics"
                   :loading="topic_loading"
-                  clearable
+                  clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
                   hide-details="true"
@@ -45,7 +45,7 @@
                   item-title="text"
                   item-value="id"
                   :loading="theme_loading"
-                  clearable
+                  clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
                   hide-details="true"
@@ -67,7 +67,7 @@
                   v-model="selected_sub_theme"
                   :items="sub_themes"
                   :loading="sub_theme_loading"
-                  clearable
+                  clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
                   hide-details="true"
@@ -88,7 +88,7 @@
                   label="Choose the original language..."
                   v-model="selected_language"
                   :items="languages"
-                  clearable
+                  clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
                   hide-details="true"
@@ -109,7 +109,7 @@
                 label="Select the number of words to repeat..."
                 v-model="selected_number"
                 :items="numbers"
-                clearable
+                clearable="true"
                 :disabled="is_parameters_select_disabled"
                 variant="outlined"
                 hide-details="true"
@@ -147,7 +147,7 @@
       </v-row>
     </v-col>
 
-    <v-divider vertical></v-divider>
+    <v-divider vertical="true"></v-divider>
 
     <v-col class="grow d-flex flex-column flex-nowrap" sm="12" md="8" >
       <!--    AREA WITH WORDS    -->
@@ -205,12 +205,12 @@
                         label="Original"
                         variant="outlined"
                         v-model="current_word_to_check"
-                        readonly
+                        readonly="true"
                     ></v-text-field>
                     <v-form validate-on="submit lazy" @submit.prevent="checkTranslation">
                       <v-text-field
                           v-model="current_user_input"
-                          persistent-hint
+                          persistent-hint="true"
                           label="Translation..."
                           variant="outlined"
                           @keyup.enter="checkTranslation"
@@ -250,7 +250,7 @@
         </v-card>
         <v-card v-if="is_lesson_complete && forgotten_words.length !== 0" elevation="0" class="w-100" max-height="400px">
           <v-card-text>
-            <v-table fixed-header height="300px">
+            <v-table fixed-header="true" height="300px">
               <thead>
                 <tr>
                   <th class="text-center">
@@ -286,7 +286,7 @@
   </v-row>
 
   <!-- ON LESSON COMPLETE CONTENT -->
-  <v-overlay v-model="overlay" contained class="align-center justify-center">
+  <v-overlay v-model="overlay" contained="true" class="align-center justify-center">
     <v-card rounded="lg" width="360">
 
       <v-card-item>
@@ -305,8 +305,8 @@
           <v-rating
             v-model="success_percent"
             color="yellow-darken-3"
-            half-increments
-            readonly
+            half-increments="true"
+            readonly="true"
         ></v-rating>
           <p class="px-3 text-subtitle-1 text-center">
             Great job! <br/> You remember {{success_percent / 5 * 100}} % of the words, are you sure, you need this practice?)
@@ -332,8 +332,6 @@ import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
 import * as consts from '@/js/constants'
-import {kDefaultWordNumberChoices} from "@/js/constants";
-// Sort of enum. TODO: move the the constants file with all related methods
 
 export default {
   data() {
@@ -395,14 +393,14 @@ export default {
   },
   // Object, required to minitor the state of the elements on the page
   watch: {
-    selected_topic : function (oldVal, newVal) {
+    selected_topic : function () {
       // Drop all child inputs
       this.selected_theme = null
       this.selected_sub_theme = null
 
       this.getThemes()
     },
-    selected_theme: function (oldVal, newVal) {
+    selected_theme: function () {
       // Drop all child inputs
       this.selected_sub_theme = null
 
@@ -436,7 +434,7 @@ export default {
 
       // Get IDs of all themes
       let ids = []
-      Object.entries(this.themes).forEach(([key, value]) => { ids.push(value.id)})
+      Object.entries(this.themes).forEach(([_, value]) => { ids.push(value.id)})
 
       if (ids.includes(this.selected_theme)) {
         this.sub_theme_loading = true
@@ -496,7 +494,10 @@ export default {
               this.current_word_to_check = this.words_order[this.current_id]
             }
           })
-          .catch(error => (useToast().error(consts.kServerNotRespondError)))
+          .catch(error => {
+            useToast().error(consts.kServerNotRespondError)
+            console.log(error)
+          })
           .finally(() => (this.words_loading = false))
     },
     // Forgotten words
