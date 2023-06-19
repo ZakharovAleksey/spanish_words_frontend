@@ -64,9 +64,9 @@
             </template>
               <v-autocomplete
                   label="Choose the sub-category..."
-                  v-model="selected_sub_theme"
-                  :items="sub_themes"
-                  :loading="sub_theme_loading"
+                  v-model="selected_category_key"
+                  :items="category_keys"
+                  :loading="category_key_loading"
                   :clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
@@ -345,10 +345,10 @@ export default {
       selected_category: null,
       categories: [],
       categories_loading: false,
-      // Sub-theme
-      selected_sub_theme: null,
-      sub_themes: [],
-      sub_theme_loading: false,
+      // Category key for the words filtering
+      selected_category_key: null,
+      category_keys: [],
+      category_key_loading: false,
       // Number of the words
       selected_number: consts.kDefaultWordNumberChoices[0],
       numbers: consts.kDefaultWordNumberChoices,
@@ -396,13 +396,13 @@ export default {
     selected_gsheet : function () {
       // Drop all child inputs
       this.selected_category = null
-      this.selected_sub_theme = null
+      this.selected_category_key = null
 
       this.getThemes()
     },
     selected_category: function () {
       // Drop all child inputs
-      this.selected_sub_theme = null
+      this.selected_category_key = null
 
       this.getSubThemes()
     },
@@ -437,7 +437,7 @@ export default {
       Object.entries(this.categories).forEach(([_, value]) => { ids.push(value.id)})
 
       if (ids.includes(this.selected_category)) {
-        this.sub_theme_loading = true
+        this.category_key_loading = true
         axios
             .get('/api/worksheet/colums/unique_values/', {
               params: {
@@ -445,12 +445,12 @@ export default {
                 column_id: this.selected_category
               }
             })
-            .then(response => (this.sub_themes = response.data))
+            .then(response => (this.category_keys = response.data))
             .catch(error => {
               useToast().error(consts.kServerNotRespondError)
               console.log(error)
             })
-            .finally(() => (this.sub_theme_loading = false))
+            .finally(() => (this.category_key_loading = false))
       }
     },
     async getWords() {
@@ -467,7 +467,7 @@ export default {
             params: {
               title: this.selected_gsheet,
               filter_column_id: this.selected_category,
-              template: this.selected_sub_theme,
+              template: this.selected_category_key,
               column_ids: '0,1',
               count: this.selected_number
             }
@@ -545,7 +545,7 @@ export default {
         useToast().info(consts.kInputDataIsMissed + 'words filtering key')
         return false
       }
-      if (need_sub_theme && this.selected_sub_theme === null) {
+      if (need_sub_theme && this.selected_category_key === null) {
         useToast().info(consts.kInputDataIsMissed + 'words category')
         return false
       }
