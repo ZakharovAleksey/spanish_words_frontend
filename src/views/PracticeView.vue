@@ -149,7 +149,7 @@
 
     <v-divider :vertical="true"></v-divider>
 
-    <v-col class="grow d-flex flex-column flex-nowrap" sm="12" md="8" >
+    <v-col class="grow d-flex flex-column flex-nowrap" sm="12" md="7" >
       <!--    AREA WITH WORDS    -->
       <v-row cols="12">
 

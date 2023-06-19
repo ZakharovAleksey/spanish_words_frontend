@@ -28,15 +28,20 @@
                   <v-card-text>
                     <v-text-field label="User name" v-model="user"/>
                     <v-text-field label="Password" v-model="password" type="password"/>
-                    <v-alert v-show="isValid !== null" border="start" :border-color="alertColor[index]" :text="alertText[index]"/>
+                    <v-alert
+                        v-show="isValid !== null"
+                        :border-color="alertColor[index]"
+                        :text="alertText[index]"
+                        border="start"
+                        class="text-subtitle-1"/>
                   </v-card-text>
 
                   <v-card-actions>
                     <v-row cols="12">
-                      <v-col sm="12" md="6" justify="center" align="center">
+                      <v-col sm="6" justify="center" align="center">
                         <v-btn block rounded="lg" size="large" class="text-uppercase" :loading="loading" type="submit" text="submit"/>
                       </v-col>
-                      <v-col sm="12" md="6" justify="center" align="center">
+                      <v-col sm="6" justify="center" align="center">
                         <v-btn block rounded="lg" size="large" class="text-uppercase" @click="closeDialog" text="close"/>
                       </v-col>
                     </v-row>
@@ -63,7 +68,7 @@
 </template>
 
 <script>
-import {useUserStore} from '@/stores/UserStore'
+import { useUserStore } from '@/stores/UserStore'
 
 export default {
   setup() {
@@ -105,9 +110,10 @@ export default {
     },
     async checkCredentials(){
       // TODO: implement correct API
-      const response = { user: 'azakharov', pwd: 'align'};
+      const user = import.meta.env.VITE_USER
+      const pwd = import.meta.env.VITE_PWD
 
-      return this.user === response['user'] && this.password === response['pwd'];
+      return this.user === user && this.password === pwd;
     },
     closeDialog() {
       this.user = '';
