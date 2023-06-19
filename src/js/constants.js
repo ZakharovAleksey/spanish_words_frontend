@@ -12,4 +12,4 @@ export const LessonResultMessages = {
 export const kMaxRating = 5
 export const kServerNotRespondError = 'Could not fetch the data: server does not respond.\nPlease, try again later...'
 export const kInputDataIsMissed = 'Required input field is missed: '
-export const kDefaultWordNumberChoices = [3, 10, 25, 50]
+export const kDefaultWordNumberChoices = [10, 25, 50]
