@@ -7,7 +7,7 @@
     <v-col class="grow d-flex flex-column flex-nowrap" sm="12" md="4">
       <v-row cols="12" align="end" justify="center">
         <v-list>
-          <!--    TOPIC    -->
+          <!--    GOOGLE SHEET    -->
           <v-list-item>
             <template v-slot:prepend>
               <v-tooltip text="Select the google sheet to retrieve words" location="bottom">
@@ -21,15 +21,15 @@
                   v-model="selected_gsheet"
                   :items="gsheets"
                   :loading="gsheets_loading"
-                  clearable="true"
+                  :clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
-                  hide-details="true"
+                  :hide-details="true"
                   variant="outlined"
                   class="my-2" />
           </v-list-item>
 
-          <!--  THEME  -->
+          <!--  CATEGORY  -->
           <v-list-item>
             <template v-slot:prepend>
               <v-tooltip text="Category for further words filtering" location="bottom">
@@ -39,16 +39,16 @@
               </v-tooltip>
             </template>
               <v-autocomplete
-                  label="Choose the general topic..."
-                  v-model="selected_theme"
-                  :items="themes"
+                  label="Choose filtering category..."
+                  v-model="selected_category"
+                  :items="categories"
                   item-title="text"
                   item-value="id"
-                  :loading="theme_loading"
-                  clearable="true"
+                  :loading="categories_loading"
+                  :clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
-                  hide-details="true"
+                  :hide-details="true"
                   variant="outlined"
                   class="my-2" />
           </v-list-item>
@@ -67,7 +67,7 @@
                   v-model="selected_sub_theme"
                   :items="sub_themes"
                   :loading="sub_theme_loading"
-                  clearable="true"
+                  :clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
                   hide-details="true"
@@ -88,10 +88,10 @@
                   label="Choose the original language..."
                   v-model="selected_language"
                   :items="languages"
-                  clearable="true"
+                  :clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
-                  hide-details="true"
+                  :hide-details="true"
                   variant="outlined"
                   class="my-2" />
           </v-list-item>
@@ -109,10 +109,10 @@
                 label="Select the number of words to repeat..."
                 v-model="selected_number"
                 :items="numbers"
-                clearable="true"
+                :clearable="true"
                 :disabled="is_parameters_select_disabled"
                 variant="outlined"
-                hide-details="true"
+                :hide-details="true"
                 class="my-2" />
           </v-list-item>
 
@@ -130,7 +130,7 @@
                   v-model="check_by_typing"
                   :disabled="is_parameters_select_disabled"
                   variant="outlined"
-                  hide-details="true"
+                  :hide-details="true"
                   class="my-2" />
           </v-list-item>
         </v-list>
@@ -147,7 +147,7 @@
       </v-row>
     </v-col>
 
-    <v-divider vertical="true"></v-divider>
+    <v-divider :vertical="true"></v-divider>
 
     <v-col class="grow d-flex flex-column flex-nowrap" sm="12" md="8" >
       <!--    AREA WITH WORDS    -->
@@ -205,12 +205,12 @@
                         label="Original"
                         variant="outlined"
                         v-model="current_word_to_check"
-                        readonly="true"
+                        :readonly="true"
                     ></v-text-field>
                     <v-form validate-on="submit lazy" @submit.prevent="checkTranslation">
                       <v-text-field
                           v-model="current_user_input"
-                          persistent-hint="true"
+                          :persistent-hint="true"
                           label="Translation..."
                           variant="outlined"
                           @keyup.enter="checkTranslation"
@@ -250,7 +250,7 @@
         </v-card>
         <v-card v-if="is_lesson_complete && forgotten_words.length !== 0" elevation="0" class="w-100" max-height="400px">
           <v-card-text>
-            <v-table fixed-header="true" height="300px">
+            <v-table :fixed-header="true" height="300px">
               <thead>
                 <tr>
                   <th class="text-center">
@@ -286,7 +286,7 @@
   </v-row>
 
   <!-- ON LESSON COMPLETE CONTENT -->
-  <v-overlay v-model="overlay" contained="true" class="align-center justify-center">
+  <v-overlay v-model="overlay" :contained="true" class="align-center justify-center">
     <v-card rounded="lg" width="360">
 
       <v-card-item>
@@ -305,8 +305,8 @@
           <v-rating
             v-model="success_percent"
             color="yellow-darken-3"
-            half-increments="true"
-            readonly="true"
+            :half-increments="true"
+            :readonly="true"
         ></v-rating>
           <p class="px-3 text-subtitle-1 text-center">
             Great job! <br/> You remember {{success_percent / 5 * 100}} % of the words, are you sure, you need this practice?)
@@ -341,10 +341,10 @@ export default {
       selected_gsheet: null,
       gsheets: [],
       gsheets_loading: true,
-      // Theme
-      selected_theme: null,
-      themes: [],
-      theme_loading: false,
+      // Category-related fields
+      selected_category: null,
+      categories: [],
+      categories_loading: false,
       // Sub-theme
       selected_sub_theme: null,
       sub_themes: [],
@@ -395,12 +395,12 @@ export default {
   watch: {
     selected_gsheet : function () {
       // Drop all child inputs
-      this.selected_theme = null
+      this.selected_category = null
       this.selected_sub_theme = null
 
       this.getThemes()
     },
-    selected_theme: function () {
+    selected_category: function () {
       // Drop all child inputs
       this.selected_sub_theme = null
 
@@ -413,36 +413,36 @@ export default {
         return
 
       if (this.gsheets.includes(this.selected_gsheet)) {
-        this.theme_loading = true
+        this.categories_loading = true
         axios
             .get('/api/worksheet/columns/', {
               params: {
                 title: this.selected_gsheet
               }
             })
-            .then(response => (this.themes = response.data))
+            .then(response => (this.categories = response.data))
             .catch(error => {
               useToast().error(consts.kServerNotRespondError)
               console.log(error)
             })
-            .finally(() => (this.theme_loading = false))
+            .finally(() => (this.categories_loading = false))
       }
     },
     async getSubThemes() {
-      if (this.gsheets.length === 0 || this.themes.length === 0)
+      if (this.gsheets.length === 0 || this.categories.length === 0)
         return
 
       // Get IDs of all themes
       let ids = []
-      Object.entries(this.themes).forEach(([_, value]) => { ids.push(value.id)})
+      Object.entries(this.categories).forEach(([_, value]) => { ids.push(value.id)})
 
-      if (ids.includes(this.selected_theme)) {
+      if (ids.includes(this.selected_category)) {
         this.sub_theme_loading = true
         axios
             .get('/api/worksheet/colums/unique_values/', {
               params: {
                 title: this.selected_gsheet,
-                column_id: this.selected_theme
+                column_id: this.selected_category
               }
             })
             .then(response => (this.sub_themes = response.data))
@@ -466,7 +466,7 @@ export default {
           .get('/api/worksheet/random_values/', {
             params: {
               title: this.selected_gsheet,
-              filter_column_id: this.selected_theme,
+              filter_column_id: this.selected_category,
               template: this.selected_sub_theme,
               column_ids: '0,1',
               count: this.selected_number
@@ -541,7 +541,7 @@ export default {
         useToast().info(consts.kInputDataIsMissed + 'google sheet')
         return false
       }
-      if (need_theme && this.selected_theme === null) {
+      if (need_theme && this.selected_category === null) {
         useToast().info(consts.kInputDataIsMissed + 'words filtering key')
         return false
       }
