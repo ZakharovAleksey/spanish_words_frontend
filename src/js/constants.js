@@ -7,3 +7,4 @@ export const LessonResultMdiIcon = {GOOD: 'mdi-robot-happy-outline', MEDIUM: 'md
 export const kMaxRating = 5
 export const kServerNotRespondError = 'Could not fetch the data: server does not respond.\nPlease, try again later...'
 export const kInputDataIsMissed = 'Required input field is missed: '
+export const kDefaultWordNumberChoices = [3, 10, 25, 50]

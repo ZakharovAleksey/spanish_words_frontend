@@ -332,6 +332,7 @@ import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
 import * as consts from '@/js/constants'
+import {kDefaultWordNumberChoices} from "@/js/constants";
 // Sort of enum. TODO: move the the constants file with all related methods
 
 export default {
@@ -351,8 +352,8 @@ export default {
       sub_themes: [],
       sub_theme_loading: false,
       // Number of the words
-      selected_number: 3,
-      numbers: [3, 10, 25, 50],
+      selected_number: consts.kDefaultWordNumberChoices[0],
+      numbers: consts.kDefaultWordNumberChoices,
       // Checkbox
       check_by_typing: true,
       // Language
