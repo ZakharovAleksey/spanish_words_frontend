@@ -6,7 +6,8 @@ TODO:
 - [ ] Make correct authorization
 - [ ] Make icons to the language
 - [ ] Replace copy paste in components by making the separate component and re-use them
-- [ ] Re-write the axios get requests
+- [X] Re-write the axios get requests
+- [ ] Deploy using [vercel](https://vercel.com/)
 
 ## Recommended IDE Setup
 
