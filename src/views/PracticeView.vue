@@ -23,6 +23,7 @@
                   :loading="topic_loading"
                   clearable
                   append-icon
+                  :disabled="is_parameters_select_disabled"
                   hide-details="true"
                   variant="outlined"
                   class="my-2" />
@@ -46,6 +47,7 @@
                   :loading="theme_loading"
                   clearable
                   append-icon
+                  :disabled="is_parameters_select_disabled"
                   hide-details="true"
                   variant="outlined"
                   class="my-2" />
@@ -67,6 +69,7 @@
                   :loading="sub_theme_loading"
                   clearable
                   append-icon
+                  :disabled="is_parameters_select_disabled"
                   hide-details="true"
                   variant="outlined"
                   class="my-2" />
@@ -87,6 +90,7 @@
                   :items="languages"
                   clearable
                   append-icon
+                  :disabled="is_parameters_select_disabled"
                   hide-details="true"
                   variant="outlined"
                   class="my-2" />
@@ -106,6 +110,7 @@
                 v-model="selected_number"
                 :items="numbers"
                 clearable
+                :disabled="is_parameters_select_disabled"
                 variant="outlined"
                 hide-details="true"
                 class="my-2" />
@@ -123,6 +128,7 @@
               <v-checkbox
                   label="Do words self-check words on the paper"
                   v-model="check_by_typing"
+                  :disabled="is_parameters_select_disabled"
                   variant="outlined"
                   hide-details="true"
                   class="my-2" />
@@ -144,9 +150,9 @@
     <v-divider vertical></v-divider>
 
     <v-col class="grow d-flex flex-column flex-nowrap" sm="12" md="8" >
-
       <!--    AREA WITH WORDS    -->
       <v-row cols="12">
+
         <!--   LESSON AREA       -->
         <v-card v-if="!is_lesson_complete" elevation="0" width="100%">
           <v-card-item>
@@ -159,7 +165,7 @@
             </v-card-subtitle>
           </v-card-item>
         </v-card>
-        <v-card v-if="!is_lesson_complete" elevation="0" width="100%">
+        <v-card v-if="!is_lesson_complete && check_by_typing" elevation="0" width="100%">
           <v-card-text>
             <v-col cols="12">
               <v-row cols="12" justify="center">
@@ -177,9 +183,60 @@
             </v-col>
           </v-card-text>
         </v-card>
+        <v-card v-if="!is_lesson_complete && !check_by_typing" elevation="0" width="100%">
+          <v-card-text>
+            <v-container>
+              <v-row cols="12" v-if="words_loading" justify="center">
+                <v-progress-circular class="align-center justify-center" indeterminate />
+              </v-row>
+              <div v-if="!words_loading && Object.keys(words).length !== 0">
+                <v-row cols="12" align-content="center" >
+                  <p class="my-2 text-h6">Your progress: {{Math.round(current_id / words_order.length * 100)}} %</p>
+                  <v-progress-linear
+                      v-model="current_id"
+                      :max="selected_number"
+                      :height="12"
+                      rounded class="pa-0 mb-10"
+                      color="green"></v-progress-linear>
+                </v-row>
+                <v-row cols="12" justify="center" align="center">
+                  <v-card rounded="lg" class="pa-5" width="400">
+                    <v-text-field
+                        label="Original"
+                        variant="outlined"
+                        v-model="current_word_to_check"
+                        readonly
+                    ></v-text-field>
+                    <v-form validate-on="submit lazy" @submit.prevent="checkTranslation">
+                      <v-text-field
+                          v-model="current_user_input"
+                          persistent-hint
+                          label="Translation..."
+                          variant="outlined"
+                          @keyup.enter="checkTranslation"
+                          :readonly="post_validation_lock"
+                          :error="!is_user_input_correct"
+                          :error-messages="current_error_message"
+                          :messages="current_message"
+                      ></v-text-field>
+                    </v-form>
+                    <v-card-actions class="align-center justify-center">
+                      <v-btn
+                          rounded="lg"
+                          size="large"
+                          class="text-uppercase mt-1 my-button"
+                          text="NEXT"
+                          @click="getNextWord" />
+                    </v-card-actions>
+                  </v-card>
+                </v-row>
+              </div>
+            </v-container>
+          </v-card-text>
+        </v-card>
 
         <!--   AREA WITH FORGOTTEN WORDS       -->
-        <v-card v-if="is_lesson_complete" elevation="0" class="w-100">
+        <v-card v-if="is_lesson_complete && forgotten_words.length !== 0" elevation="0" class="w-100">
 
           <v-card-item>
             <v-card-title>
@@ -191,27 +248,26 @@
             </v-card-subtitle>
           </v-card-item>
         </v-card>
-        <v-card v-if="is_lesson_complete" elevation="0" class="w-100" max-height="400px">
+        <v-card v-if="is_lesson_complete && forgotten_words.length !== 0" elevation="0" class="w-100" max-height="400px">
           <v-card-text>
-            <v-list>
-                <v-list-item v-for="item in forgotten_words">
-                  <v-row cols="12" align="center">
-                    <v-col cols="6" align="center">
-                      <v-chip class="ma-1 w-75 justify-center" size="large">
-                        {{item}}
-                      </v-chip>
-                    </v-col>
-                    <v-col cols="6" align="center">
-                      <v-chip class="mx-1 w-75 justify-center" size="large">
-                        <span>
-                          {{this.word_to_translation_pairs.get(item)}}
-                        </span>
-                      </v-chip>
-                    </v-col>
-                  </v-row>
-                </v-list-item>
-              </v-list>
-
+            <v-table fixed-header height="300px">
+              <thead>
+                <tr>
+                  <th class="text-center">
+                    Original
+                  </th>
+                  <th class="text-center">
+                    Translation
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in forgotten_words">
+                  <td class="text-center">{{ item }}</td>
+                  <td class="text-center">{{ word_to_translation_pairs.get(item) }}</td>
+                </tr>
+              </tbody>
+            </v-table>
           </v-card-text>
         </v-card>
       </v-row>
@@ -219,10 +275,11 @@
       <!--    COMPLETE BUTTON    -->
       <v-row cols="12" align="end" justify="center">
         <v-btn
-          rounded="lg"
-          size="large"
-          class="text-uppercase my-1 my-button"
-          @click="onCompleteClick"
+            v-if="!is_lesson_complete && Object.keys(words).length !== 0"
+            rounded="lg"
+            size="large"
+            class="text-uppercase my-1 my-button"
+            @click="onCompleteClick"
         >complete</v-btn>
       </v-row>
     </v-col>
@@ -288,6 +345,7 @@ const kInputDataIsMissed = 'Required input field is missed: '
 export default {
   data() {
     return {
+      is_parameters_select_disabled: false,
       // Topic
       selected_topic: null,
       topics: [],
@@ -301,8 +359,8 @@ export default {
       sub_themes: [],
       sub_theme_loading: false,
       // Number of the words
-      selected_number: 25,
-      numbers: [10, 25, 50],
+      selected_number: 3,
+      numbers: [3, 10, 25, 50],
       // Checkbox
       check_by_typing: true,
       // Language
@@ -319,6 +377,16 @@ export default {
       is_lesson_complete: false,
       lesson_icon: null,
       lesson_color: null,
+      // Other
+      words_order: [],
+      current_id: 0,
+
+      current_word_to_check: null,
+      current_user_input: null,
+      post_validation_lock: false,
+      is_user_input_correct: true,
+      current_error_message: '',
+      current_message: ''
     }
   },
   async beforeMount() {
@@ -356,7 +424,11 @@ export default {
       if (this.topics.includes(this.selected_topic)) {
         this.theme_loading = true
         axios
-            .get(`/api/worksheet/columns/?title=${this.selected_topic}`)
+            .get('/api/worksheet/columns/', {
+              params: {
+                title: this.selected_topic
+              }
+            })
             .then(response => (this.themes = response.data))
             .catch(error => {
               useToast().error(kServerNotRespondError)
@@ -374,11 +446,14 @@ export default {
       Object.entries(this.themes).forEach(([key, value]) => { ids.push(value.id)})
 
       if (ids.includes(this.selected_theme)) {
-
-        // TODO: FIX THE URL PATH
         this.sub_theme_loading = true
         axios
-            .get(`/api/worksheet/colums/unique_values/?title=${this.selected_topic}&column_id=${this.selected_theme}`)
+            .get('/api/worksheet/colums/unique_values/', {
+              params: {
+                title: this.selected_topic,
+                column_id: this.selected_theme
+              }
+            })
             .then(response => (this.sub_themes = response.data))
             .catch(error => {
               useToast().error(kServerNotRespondError)
@@ -391,12 +466,21 @@ export default {
       if(!this.isPreRequestRequirementsSatisfied(true, true, true))
         return
 
+      // Prepare for the new lesson
       this.cleanUpLessonData()
+      this.is_parameters_select_disabled = true
 
       this.words_loading = true
-      const url = `/api/worksheet/random_values?title=${this.selected_topic}&filter_column_id=${this.selected_theme}&template=${this.selected_sub_theme}&column_ids=0,1&count=${this.selected_number}`
       axios
-          .get(url)
+          .get('/api/worksheet/random_values/', {
+            params: {
+              title: this.selected_topic,
+              filter_column_id: this.selected_theme,
+              template: this.selected_sub_theme,
+              column_ids: '0,1',
+              count: this.selected_number
+            }
+          })
           .then(response => {
             // Parse words to make chips from them
             // TODO: on the backend side put everything to the dict {word, translation, color, icon}
@@ -405,17 +489,22 @@ export default {
               this.words[column] = value.map((v) => ({ word: v, color: 'green', icon: 'mdi-emoticon' }))
             }
 
+            // Create map for translation: <word> - <translation>
             const key_column = this.selected_language === Column.SPANISH ? 0 : 1
             const value_column = key_column === 1 ? 0 : 1
             const length = response.data[key_column].length
             for(let i = 0; i < length; ++i) {
               this.word_to_translation_pairs.set(response.data[key_column][i], response.data[value_column][i])
             }
+
+            if (!this.check_by_typing) {
+              this.words_order = [...response.data[key_column]]
+              this.forgotten_words = [...response.data[key_column]]
+              this.current_word_to_check = this.words_order[this.current_id]
+            }
           })
-          .catch(error => {
-            useToast().error(kServerNotRespondError)
-            console.log(error)
-          }).finally(() => (this.words_loading = false))
+          .catch(error => (useToast().error(kServerNotRespondError)))
+          .finally(() => (this.words_loading = false))
     },
     // Forgotten words
     updateWordStatus(item) {
@@ -451,6 +540,7 @@ export default {
     onLessonComplete() {
       this.overlay = !this.overlay
       this.is_lesson_complete = true
+      this.is_parameters_select_disabled = false
     },
     isPreRequestRequirementsSatisfied(need_topic = false, need_theme = false, need_sub_theme = false) {
       if (need_topic && this.selected_topic === null) {
@@ -469,10 +559,21 @@ export default {
       return true
     },
     cleanUpLessonData(){
+      // Clean-up for the first type of the lesson: without typing
       this.words = {}
       this.forgotten_words = []
       this.word_to_translation_pairs.clear()
       this.is_lesson_complete = false
+
+      // Clean up for the second type of the lesson: with typing
+      this.words_order = []
+      this.current_id = 0
+      this.current_word_to_check = null
+      this.current_user_input = null
+      this.post_validation_lock = false
+      this.is_user_input_correct = true
+      this.current_error_message = ''
+      this.current_message = ''
     },
     chooseLessonIcons(success){
       if(success > MinSuccessThresholds.GOOD) {
@@ -482,6 +583,50 @@ export default {
         return { icon: LessonResultMdiIcon.MEDIUM, color: Color.MEDIUM}
       }
       return { icon: LessonResultMdiIcon.BAD, color: Color.BAD}
+    },
+    checkTranslation() {
+      // TODO: On the second 'enter' input we go to the next word
+      const expected = this.word_to_translation_pairs.get(this.current_word_to_check)
+      this.is_user_input_correct = this.current_user_input === expected
+
+      if (this.is_user_input_correct) {
+        const index = this.forgotten_words.indexOf(this.current_word_to_check)
+        if (index !== -1) {
+          this.forgotten_words.splice(index, 1)
+        }
+      }
+
+      this.post_validation_lock = true
+      if (!this.is_user_input_correct) {
+        this.current_error_message = `Sorry, expected translation: ${expected}`
+      } else {
+        this.current_message = 'Great job!'
+      }
+    },
+    getNextWord() {
+      // If there was no translation check: do it first
+      if (!this.post_validation_lock) {
+        this.checkTranslation()
+        return
+      }
+
+      // Check if this was the last word and the game is complete
+      if (this.current_id === this.words_order.length - 1) {
+        this.onCompleteClick()
+        return
+      }
+
+      // Go to the next word
+      this.current_id++
+      this.current_word_to_check = this.words_order[this.current_id]
+
+      this.current_user_input = ''
+      this.is_user_input_correct = ''
+      this.current_error_message = ''
+      this.current_message = ''
+
+      this.is_user_input_correct = true
+      this.post_validation_lock = false
     }
   }
 }
