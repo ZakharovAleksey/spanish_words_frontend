@@ -6,7 +6,7 @@
 
     <!--  MAIN SCREEN LOGO  -->
     <v-col align="center" sm="12" md="4" lg="3">
-      <img src="@/assets/logo.svg" width="256" height="256"/>
+      <img src="@/assets/san-fermin.svg" width="256" height="256"/>
     </v-col>
 
     <v-col sm="12" md="4" lg="4">

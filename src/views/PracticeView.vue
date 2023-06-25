@@ -332,6 +332,7 @@ import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
 import * as consts from '@/js/constants'
+import {kLoggedOutMessage, kRedirectToLoginPageTime} from "@/js/constants";
 
 export default {
   data() {
@@ -391,10 +392,7 @@ export default {
     axios
         .get('/api/spreadsheet/titles/')
         .then(response => (this.gsheets = response.data))
-        .catch(error => {
-          useToast().error(consts.kServerNotRespondError)
-          console.log(error)
-        })
+        .catch(error => (this.showErrorToast(error)))
         .finally(() => (this.gsheets_loading = false))
   },
   // Object, required to minitor the state of the elements on the page
@@ -427,10 +425,7 @@ export default {
               }
             })
             .then(response => (this.categories = response.data))
-            .catch(error => {
-              useToast().error(consts.kServerNotRespondError)
-              console.log(error)
-            })
+            .catch(error => (this.showErrorToast(error)))
             .finally(() => (this.categories_loading = false))
       }
     },
@@ -452,10 +447,7 @@ export default {
               }
             })
             .then(response => (this.category_keys = response.data))
-            .catch(error => {
-              useToast().error(consts.kServerNotRespondError)
-              console.log(error)
-            })
+            .catch(error => (this.showErrorToast(error)))
             .finally(() => (this.category_key_loading = false))
       }
     },
@@ -500,10 +492,7 @@ export default {
               this.current_word_to_check = this.words_queue[this.current_word_id]
             }
           })
-          .catch(error => {
-            useToast().error(consts.kServerNotRespondError)
-            console.log(error)
-          })
+          .catch(error => (this.showErrorToast(error)))
           .finally(() => (this.words_loading = false))
     },
     // Forgotten words
@@ -637,6 +626,17 @@ export default {
 
       this.is_user_input_correct = true
       this.post_validation_lock = false
+    },
+    showErrorToast(error) {
+      console.log(error)
+
+      if (error.response.status === 401) {
+        useToast().info(consts.kLoggedOutMessage)
+        setTimeout(() => { this.$router.push('/login') }, consts.kRedirectToLoginPageTime)
+      }
+      else {
+        useToast().error(consts.kServerNotRespondError)
+      }
     }
   }
 }

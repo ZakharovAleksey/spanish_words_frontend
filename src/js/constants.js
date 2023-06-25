@@ -10,6 +10,9 @@ export const LessonResultMessages = {
 }
 
 export const kMaxRating = 5
-export const kServerNotRespondError = 'Could not fetch the data: server does not respond.\nPlease, try again later...'
-export const kInputDataIsMissed = 'Required input field is missed: '
+export const kRedirectToLoginPageTime = 3000
 export const kDefaultWordNumberChoices = [10, 25, 50]
+
+export const kServerNotRespondError = 'Could not fetch the data: server does not respond.\nPlease, try again later...'
+export const kLoggedOutMessage = `Your credentials have been expired. \n You will be re-directed to the login page in ${kRedirectToLoginPageTime/1000} sec.`
+export const kInputDataIsMissed = 'Required input field is missed: '

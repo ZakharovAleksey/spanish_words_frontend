@@ -64,7 +64,7 @@ export default {
       password: '',
       // Passwords-related variables
       loading: false,
-      isValid: null,
+      isValid: null
     }
   },
   methods: {
@@ -90,11 +90,17 @@ export default {
             store.setRefreshToken(refresh)
             localStorage.setItem('refresh', refresh)
 
+            // Update authorization header
+            axios.defaults.headers.common['Authorization'] = 'JWT ' + access
+
             this.isValid = true
             this.$router.push('/practice')
           })
           .catch(error => {
             console.log('incorrect credentials', error)
+
+            // Update authorization header
+            axios.defaults.headers.common['Authorization'] = ''
             this.isValid = false
           })
           .finally(() => (this.loading = false))

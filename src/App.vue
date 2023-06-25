@@ -1,6 +1,6 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import iconImage from '@/assets/logo.svg'
+import iconImage from '@/assets/spain-logo.svg'
 </script>
 
 <template>
@@ -28,11 +28,20 @@ import iconImage from '@/assets/logo.svg'
 
 <script>
 import { useUserStore } from '@/stores/UserStore.js'
+import axios from "axios";
 
 export default {
   beforeCreate() {
     const store = useUserStore()
     store.initializeStorage()
+
+    // Add the access token for each request to server
+    const access = store.getAccessToken()
+    if(access) {
+      axios.defaults.headers.common['Authorization'] = 'JWT ' + access
+    } else {
+      axios.defaults.headers.common['Authorization'] = ''
+    }
   }
 }
 
