@@ -9,19 +9,32 @@ export const useUserStore = defineStore('userStore', {
         // Some getters here - used for filtered methods
     },
     actions : {
-        setAccessToken(token) {
-            console.log('acc')
-            localStorage.setItem('access', token)
+        initializeStorage(){
+            const access = localStorage.getItem('access')
+            if (!access) {
+                this.access = ''
+            } else {
+                this.access = access
+            }
+
+            const refresh = localStorage.getItem('refresh')
+            if (!refresh) {
+                this.refresh = ''
+            } else {
+                this.refresh = refresh
+            }
+        },
+        setAccessToken(access) {
+            this.access = access
         },
         getAccessToken() {
-            return localStorage.getItem('access')
+            return this.access
         },
-        setRefreshToken(token) {
-            console.log('refresh')
-            localStorage.setItem('refresh', token)
+        setRefreshToken(refresh) {
+            this.refresh = refresh
         },
         getRefreshToken() {
-            return localStorage.getItem('refresh')
+            return this.refresh
         }
     }
 })

@@ -1,8 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { useUserStore } from '@/stores/UserStore'
-import axios from "axios";
-import { isUserLoggedIn } from '@/js/common_utils'
+import axios from 'axios'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,9 +20,6 @@ const router = createRouter({
     {
       path: '/practice',
       name: 'practice',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/PracticeView.vue')
     }
   ]
@@ -31,8 +27,9 @@ const router = createRouter({
 
 // https://jasonwatmore.com/post/2022/06/07/vue-3-redirect-to-login-page-if-unauthenticated
 router.beforeEach(async (to) => {
-  // redirect to login page if not logged in and trying to access a restricted page
+  // Redirect to the '/login' page in case user is not logged in or access token is expired
   const publicPages = ['/', '/login']
+
   if (!publicPages.includes(to.path)) {
     const store = useUserStore()
 
@@ -40,21 +37,21 @@ router.beforeEach(async (to) => {
     const refresh = store.getRefreshToken()
 
     // There is no information in local storage about these variables
-    if (access == null && refresh == null) {
+    if (!access && !refresh) {
       return '/login'
     }
 
     axios
         .post('/api/v1/jwt/verify/', {
-          token: refresh
+          token: access
         })
-        .then((response) => {
-          console.log('token verified', response)
-        })
-        .catch(error => {
-          console.log('token is invalid', error)
+        .catch(() => {
           localStorage.clear()
-          return '/login'
+
+          // In case user access token is no longer valid - redirect to the '/login' page
+          setTimeout(() => {
+            router.push('/login')
+          }, 1500)
         })
   }
 })

@@ -1,7 +1,5 @@
-// import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
-
 
 // Router
 import router from './router'
@@ -25,13 +23,13 @@ const vuetify = createVuetify({
   icons: {
     defaultSet: 'mdi',
     aliases,
-    sets: {mdi}
+    sets: { mdi }
   }
 })
 
 // Vue Toast
 import Toast from 'vue-toastification'
-import "vue-toastification/dist/index.css"
+import 'vue-toastification/dist/index.css'
 
 const app = createApp(App)
 app.use(router)

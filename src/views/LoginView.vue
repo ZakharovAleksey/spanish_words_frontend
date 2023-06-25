@@ -72,7 +72,8 @@ export default {
       await this.checkCredentials();
     },
     async checkCredentials(){
-      console.log('user:', this.user, 'pwd', this.password)
+      // Clear the storage before setting up a new tokens
+      localStorage.clear()
       axios
           .post('/api/v1/jwt/create/', {
             username: this.user,
@@ -81,17 +82,19 @@ export default {
           .then(response => {
             const store = useUserStore()
 
-            const access_token = response.data.access
-            store.setAccessToken(access_token)
+            const access = response.data.access
+            store.setAccessToken(access)
+            localStorage.setItem('access', access)
 
-            const refresh_token = response.data.refresh
-            store.setRefreshToken(refresh_token)
+            const refresh = response.data.refresh
+            store.setRefreshToken(refresh)
+            localStorage.setItem('refresh', refresh)
 
             this.isValid = true
             this.$router.push('/practice')
           })
           .catch(error => {
-            console.log(error)
+            console.log('incorrect credentials', error)
             this.isValid = false
           })
           .finally(() => (this.loading = false))

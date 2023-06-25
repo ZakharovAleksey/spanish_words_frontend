@@ -19,7 +19,7 @@
             rounded="lg"
             size="large"
             class="text-uppercase"
-            :to="pathToGo()"
+            to="/practice"
         >start the practice</v-btn>
       </v-row>
     </v-col>
@@ -27,20 +27,6 @@
 </template>
 
 <script>
-import { useUserStore } from '@/stores/UserStore'
-
-export default {
-  setup() {
-    const store = useUserStore()
-    return { store }
-  },
-  methods: {
-    pathToGo(){
-      const store = useUserStore()
-      return store.getRefreshToken() !== null ? '/practice' : '/login'
-    }
-  }
-}
 </script>
 
 <style scoped>

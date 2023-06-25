@@ -18,7 +18,7 @@ import iconImage from '@/assets/logo.svg'
 
     <!--  MAIN CONTENT  -->
     <v-main>
-      <v-container class="fill-height" fluid>
+      <v-container class="fill-height" :fluid="true">
         <RouterView />
       </v-container>
     </v-main>
@@ -27,6 +27,15 @@ import iconImage from '@/assets/logo.svg'
 </template>
 
 <script>
+import { useUserStore } from '@/stores/UserStore.js'
+
+export default {
+  beforeCreate() {
+    const store = useUserStore()
+    store.initializeStorage()
+  }
+}
+
 </script>
 
 <style scoped>
