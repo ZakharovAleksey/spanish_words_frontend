@@ -1,6 +1,7 @@
 # Spanish words practice frontend
 
 This is a repository with the frontend of the spanish words practice.
+Link to the deployed site: [here](https://zakharovaleksey.github.io/spanish_words_frontend/).
 
 TODO:
 - [ ] Make correct authorization
