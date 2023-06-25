@@ -1,18 +1,27 @@
-import {defineStore} from 'pinia'
+import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('userStore', {
     state: () => ({
-        isUserLoggenIn: false
+        access: '',
+        refresh: ''
     }),
     getters: {
         // Some getters here - used for filtered methods
     },
     actions : {
-        logInUser() {
-            this.isUserLoggenIn = true
+        setAccessToken(token) {
+            console.log('acc')
+            localStorage.setItem('access', token)
         },
-        isUserLoggedIn() {
-            return this.isUserLoggenIn
+        getAccessToken() {
+            return localStorage.getItem('access')
+        },
+        setRefreshToken(token) {
+            console.log('refresh')
+            localStorage.setItem('refresh', token)
+        },
+        getRefreshToken() {
+            return localStorage.getItem('refresh')
         }
     }
 })

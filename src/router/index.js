@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { useUserStore } from '@/stores/UserStore'
+import axios from "axios";
+import { isUserLoggedIn } from '@/js/common_utils'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,9 +36,26 @@ router.beforeEach(async (to) => {
   if (!publicPages.includes(to.path)) {
     const store = useUserStore()
 
-    if (!store.isUserLoggedIn()) {
-      return '/login';
+    const access = store.getAccessToken()
+    const refresh = store.getRefreshToken()
+
+    // There is no information in local storage about these variables
+    if (access == null && refresh == null) {
+      return '/login'
     }
+
+    axios
+        .post('/api/v1/jwt/verify/', {
+          token: refresh
+        })
+        .then((response) => {
+          console.log('token verified', response)
+        })
+        .catch(error => {
+          console.log('token is invalid', error)
+          localStorage.clear()
+          return '/login'
+        })
   }
 })
 

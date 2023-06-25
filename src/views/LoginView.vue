@@ -50,6 +50,7 @@
 
 <script>
 import { useUserStore } from '@/stores/UserStore'
+import axios from "axios";
 
 export default {
   setup() {
@@ -68,29 +69,32 @@ export default {
   },
   methods: {
     async submit() {
-      const store = useUserStore()
-
-      console.log(store.isUserLoggedIn())
-
-      // No need to do anything in case we already logged in
-      if (store.isUserLoggedIn())
-        return
-
-      this.loading = true;
-      this.isValid = await this.checkCredentials();
-      this.loading = false;
-
-      if (this.isValid) {
-        store.logInUser()
-        this.$router.push('/practice')
-      }
+      await this.checkCredentials();
     },
     async checkCredentials(){
-      // TODO: implement correct API
-      const user = import.meta.env.VITE_USER
-      const pwd = import.meta.env.VITE_PWD
+      console.log('user:', this.user, 'pwd', this.password)
+      axios
+          .post('/api/v1/jwt/create/', {
+            username: this.user,
+            password: this.password
+          })
+          .then(response => {
+            const store = useUserStore()
 
-      return this.user === user && this.password === pwd;
+            const access_token = response.data.access
+            store.setAccessToken(access_token)
+
+            const refresh_token = response.data.refresh
+            store.setRefreshToken(refresh_token)
+
+            this.isValid = true
+            this.$router.push('/practice')
+          })
+          .catch(error => {
+            console.log(error)
+            this.isValid = false
+          })
+          .finally(() => (this.loading = false))
     }
   }
 }

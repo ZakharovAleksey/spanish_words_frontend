@@ -37,8 +37,7 @@ export default {
   methods: {
     pathToGo(){
       const store = useUserStore()
-
-      return store.isUserLoggedIn() ? '/practice' : '/login'
+      return store.getRefreshToken() !== null ? '/practice' : '/login'
     }
   }
 }
