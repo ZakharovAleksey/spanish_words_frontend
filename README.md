@@ -34,3 +34,9 @@ npm run dev
 ```sh
 npm run build
 ```
+
+## Useful links
+* [icons](https://www.flaticon.com/)
+* [png to svg](https://www.adobe.com/express/feature/image/convert/png-to-svg)
+* [edit svg](https://deeditor.com/)
+* [deploy vue to github pages](https://learnvue.co/articles/deploy-vue-to-github-pages)
