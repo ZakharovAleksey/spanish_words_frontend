@@ -16,7 +16,8 @@ export default defineConfig({
     // To make requests for the local user
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        // target: 'http://127.0.0.1:8000',
+        target: 'https://spanish-words-backend.vercel.app/',
         changeOrigin: true
       }
     }
