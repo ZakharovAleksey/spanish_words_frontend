@@ -119,14 +119,14 @@
           <!--  TYPE OF SELF CHECK  -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Enable, if you want to check yourself on the paper" location="bottom">
+              <v-tooltip text="Disable if you want the app to check each word translation you type" location="bottom">
                 <template v-slot:activator="{ props }" >
                     <v-icon icon="mdi-draw" size="x-large" v-bind="props" />
                 </template>
               </v-tooltip>
             </template>
               <v-checkbox
-                  label="Do words self-check words on the paper"
+                  label="Do manual word translations check"
                   v-model="check_by_typing"
                   :disabled="is_parameters_select_disabled"
                   variant="outlined"
@@ -332,7 +332,7 @@ import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
 import * as consts from '@/js/constants'
-import {kLoggedOutMessage, kRedirectToLoginPageTime} from "@/js/constants";
+import {kBaseUrl} from "@/js/constants";
 
 export default {
   data() {
@@ -390,7 +390,7 @@ export default {
   async beforeMount() {
     // Upload the list of all possible spreadsheets
     axios
-        .get('/api/spreadsheet/titles/')
+        .get(`${consts.kBaseUrl}/api/spreadsheet/titles/`)
         .then(response => (this.gsheets = response.data))
         .catch(error => (this.showErrorToast(error)))
         .finally(() => (this.gsheets_loading = false))
@@ -419,7 +419,7 @@ export default {
       if (this.gsheets.includes(this.selected_gsheet)) {
         this.categories_loading = true
         axios
-            .get('/api/worksheet/columns/', {
+            .get(`${consts.kBaseUrl}/api/worksheet/columns/`, {
               params: {
                 title: this.selected_gsheet
               }
@@ -440,7 +440,7 @@ export default {
       if (ids.includes(this.selected_category)) {
         this.category_key_loading = true
         axios
-            .get('/api/worksheet/colums/unique_values/', {
+            .get(`${consts.kBaseUrl}/api/worksheet/colums/unique_values/`, {
               params: {
                 title: this.selected_gsheet,
                 column_id: this.selected_category
@@ -461,7 +461,7 @@ export default {
 
       this.words_loading = true
       axios
-          .get('/api/worksheet/random_values/', {
+          .get(`${consts.kBaseUrl}/api/worksheet/random_values/`, {
             params: {
               title: this.selected_gsheet,
               filter_column_id: this.selected_category,

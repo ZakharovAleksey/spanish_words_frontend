@@ -51,6 +51,7 @@
 <script>
 import { useUserStore } from '@/stores/UserStore'
 import axios from "axios";
+import { kBaseUrl } from '@/js/constants'
 
 export default {
   setup() {
@@ -75,7 +76,7 @@ export default {
       // Clear the storage before setting up a new tokens
       localStorage.clear()
       axios
-          .post('/api/v1/jwt/create/', {
+          .post(`${kBaseUrl}/api/v1/jwt/create/`, {
             username: this.user,
             password: this.password
           })

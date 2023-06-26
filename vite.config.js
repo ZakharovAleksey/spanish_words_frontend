@@ -14,12 +14,14 @@ export default defineConfig({
   },
   server: {
     // To make requests for the local user
-    proxy: {
-      '/api': {
-        // target: 'http://127.0.0.1:8000',
-        target: 'https://spanish-words-backend.vercel.app/',
-        changeOrigin: true
-      }
-    }
+    // proxy: {
+    //   '/api': {
+    //     // Local
+    //     // target: 'http://127.0.0.1:8000',
+    //     // PROD
+    //     target: 'https://spanish-words-backend.vercel.app/',
+    //     changeOrigin: true
+    //   }
+    // }
   }
 })

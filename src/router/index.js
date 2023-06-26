@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { useUserStore } from '@/stores/UserStore'
 import axios from 'axios'
+import { kBaseUrl } from '@/js/constants'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,16 +43,14 @@ router.beforeEach(async (to) => {
     }
 
     axios
-        .post('/api/v1/jwt/verify/', {
+        .post(`${kBaseUrl}/api/v1/jwt/verify/`, {
           token: access
         })
         .catch(() => {
           localStorage.clear()
 
           // In case user access token is no longer valid - redirect to the '/login' page
-          setTimeout(() => {
-            router.push('/login')
-          }, 1500)
+          router.push('/login')
         })
   }
 })
