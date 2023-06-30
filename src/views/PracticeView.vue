@@ -70,6 +70,7 @@
                   :clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
+                  multiple
                   hide-details="true"
                   variant="outlined"
                   class="my-2" />
@@ -465,7 +466,7 @@ export default {
             params: {
               title: this.selected_gsheet,
               filter_column_id: this.selected_category,
-              template: this.selected_category_key,
+              template: this.selected_category_key.join('|'),
               column_ids: '0,1',
               count: this.selected_number
             }
@@ -550,7 +551,7 @@ export default {
         useToast().info(consts.kInputDataIsMissed + 'words filtering key')
         return false
       }
-      if (need_sub_theme && this.selected_category_key === null) {
+      if (need_sub_theme && (this.selected_category_key === null || this.selected_category_key.length === 0)) {
         useToast().info(consts.kInputDataIsMissed + 'words category')
         return false
       }
@@ -585,7 +586,7 @@ export default {
     },
     transformWord(str){
       // Make user intput lowercase and remove accents
-      return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     },
     checkTranslation() {
       // TODO: On the second 'enter' input we go to the next word
