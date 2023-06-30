@@ -194,7 +194,7 @@
                   <p class="my-2 text-h6">Your progress: {{ Math.round(current_word_id / words_queue.length * 100) }} %</p>
                   <v-progress-linear
                       v-model="current_word_id"
-                      :max="selected_number"
+                      :max="words_queue.length"
                       :height="12"
                       rounded class="pa-0 mb-10"
                       color="green"></v-progress-linear>
