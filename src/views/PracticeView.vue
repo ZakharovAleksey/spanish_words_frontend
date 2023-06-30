@@ -583,10 +583,14 @@ export default {
       }
       return { icon: consts.LessonResultMdiIcon.BAD, color: consts.Color.BAD}
     },
+    transformWord(str){
+      // Make user intput lowercase and remove accents
+      return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    },
     checkTranslation() {
       // TODO: On the second 'enter' input we go to the next word
       const expected = this.word_to_translation_pairs.get(this.current_word_to_check)
-      this.is_user_input_correct = this.current_user_input === expected
+      this.is_user_input_correct = this.transformWord(this.current_user_input) === this.transformWord(expected)
 
       if (this.is_user_input_correct) {
         const index = this.forgotten_words.indexOf(this.current_word_to_check)
