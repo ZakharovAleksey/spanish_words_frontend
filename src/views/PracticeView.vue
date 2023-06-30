@@ -1,10 +1,10 @@
 <template>
 
   <!-- MAIN PAGE CONTENT -->
-  <v-row>
+  <v-row :class="top_class">
 
     <!--    MAIN LESSON PARAMETERS    -->
-    <v-col class="grow d-flex flex-column flex-nowrap" sm="12" md="4">
+    <v-col class="grow d-flex flex-column flex-nowrap" xs="12" md="4">
       <v-row cols="12" align="end" justify="center">
         <v-list>
           <!--    GOOGLE SHEET    -->
@@ -148,9 +148,10 @@
       </v-row>
     </v-col>
 
-    <v-divider :vertical="true"></v-divider>
 
-    <v-col class="grow d-flex flex-column flex-nowrap" sm="12" md="7" >
+<!--    <v-divider :vertical="true"></v-divider>-->
+
+    <v-col class="grow d-flex flex-column flex-nowrap" xs="12" md="7" >
       <!--    AREA WITH WORDS    -->
       <v-row cols="12">
 
@@ -333,7 +334,6 @@ import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
 import * as consts from '@/js/constants'
-import {kBaseUrl} from "@/js/constants";
 
 export default {
   data() {
@@ -385,8 +385,19 @@ export default {
       overlay: false,
       is_lesson_complete: false,
       lesson_icon: null,
-      lesson_color: null
+      lesson_color: null,
+
+      // TODO: re-make. Now this handles the size of window on xm screen
+      window: {
+            width: 0,
+            height: 0
+      },
+      top_class: ''
     }
+  },
+  created() {
+    window.addEventListener('resize', this.handleResize)
+    this.handleResize()
   },
   async beforeMount() {
     // Upload the list of all possible spreadsheets
@@ -411,6 +422,12 @@ export default {
 
       this.getSubThemes()
     },
+    window: {
+      handler() {
+        this.top_class = this.window.width < 600 ? 'flex-column' : ''
+      },
+      deep: true
+    }
   },
   methods: {
     async getThemes() {
@@ -642,6 +659,13 @@ export default {
       else {
         useToast().error(consts.kServerNotRespondError)
       }
+    },
+    destroyed() {
+      window.removeEventListener('resize', this.handleResize)
+    },
+    handleResize() {
+      this.window.width = window.innerWidth
+      this.window.height = window.innerHeight
     }
   }
 }
