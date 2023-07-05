@@ -39,7 +39,9 @@
                 rounded="lg"
                 size="large"
                 class="text-uppercase"
-                type="submit"/>
+                type="submit"
+                variant="elevated"
+            />
           </v-card-actions>
           </v-form>
         </v-sheet>

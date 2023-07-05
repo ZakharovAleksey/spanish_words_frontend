@@ -228,7 +228,9 @@
                           size="large"
                           class="text-uppercase mt-1 my-button"
                           text="NEXT"
-                          @click="getNextWord" />
+                          @click="getNextWord"
+                          variant="elevated"
+                      />
                     </v-card-actions>
                   </v-card>
                 </v-row>
@@ -322,6 +324,7 @@
             class="text-uppercase my-1 my-button"
             rounded="lg"
             size="large"
+            variant="elevated"
         >done</v-btn>
       </v-card-actions>
     </v-card>
