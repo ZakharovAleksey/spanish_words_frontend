@@ -13,7 +13,7 @@ List of the action items:
 - [ ] Make icons to the language
 - [ ] Replace copy paste in components by making the separate component and re-use them
 - [ ] Update jwt token scheme with refresh token
-- [ ] Make hash routes: to be able to go directly to the `/practice` tab
+- [X] Make hash routes: to be able to go directly to the `/practice` tab
 
 
 ## Project Setup
