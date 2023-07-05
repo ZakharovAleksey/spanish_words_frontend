@@ -32,14 +32,14 @@
           <!--  CATEGORY  -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Category for further words filtering" location="bottom">
+              <v-tooltip text="Column with the words categories" location="bottom">
                 <template v-slot:activator="{ props }" >
                     <v-icon icon="mdi-shape-outline" size="x-large" v-bind="props" />
                 </template>
               </v-tooltip>
             </template>
               <v-autocomplete
-                  label="Choose filtering category..."
+                  label="Choose the filtering column..."
                   v-model="selected_category"
                   :items="categories"
                   item-title="text"
@@ -56,14 +56,14 @@
           <!--  SUB THEME  -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Sub-category for further words filtering" location="bottom">
+              <v-tooltip text="Category for the words filtering" location="bottom">
                 <template v-slot:activator="{ props }" >
                     <v-icon icon="mdi-shape-plus" size="x-large" v-bind="props" />
                 </template>
               </v-tooltip>
             </template>
               <v-autocomplete
-                  label="Choose the sub-category..."
+                  label="Choose the words category..."
                   v-model="selected_category_key"
                   :items="category_keys"
                   :loading="category_key_loading"
