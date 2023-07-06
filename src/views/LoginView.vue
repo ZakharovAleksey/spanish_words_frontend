@@ -77,6 +77,7 @@ export default {
     async checkCredentials(){
       // Clear the storage before setting up a new tokens
       localStorage.clear()
+      this.loading = true
       axios
           .post(`${kBaseUrl}/api/v1/jwt/create/`, {
             username: this.user,
