@@ -47,6 +47,13 @@ In a couple of minutes go to the repository and check updates:
 2. Go to the "Pages" section
 3. Click "Visit site" button on the top
 
+P.S. In case you can't push to your `gh-pages` branch, remove the branch and push once again:
+```sh
+# Remove existing branch
+git push origin --delete gh-pages 
+# Create subtree 'gh-pages' branch and push changes to this branch
+git subtree push --prefix dist origin gh-pages
+```
 
 ### Useful links
 
