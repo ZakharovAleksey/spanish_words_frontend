@@ -8,7 +8,7 @@ Link to the site: [repeat-spanish-words](https://zakharovaleksey.github.io/spani
 ### Action items
 
 List of the action items:
-- [ ] Update jwt token scheme with refresh token
+- [ ] item
 
 
 ## Project Setup
