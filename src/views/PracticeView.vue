@@ -17,7 +17,7 @@
               </v-tooltip>
             </template>
               <v-combobox
-                  label="Choose the google sheet..."
+                  label="Google sheet"
                   v-model="selected_gsheet"
                   :items="gsheets"
                   :loading="gsheets_loading"
@@ -39,7 +39,7 @@
               </v-tooltip>
             </template>
               <v-autocomplete
-                  label="Choose the filtering column..."
+                  label="Google sheet base column"
                   v-model="selected_category"
                   :items="categories"
                   item-title="text"
@@ -63,7 +63,7 @@
               </v-tooltip>
             </template>
               <v-autocomplete
-                  label="Choose the words category..."
+                  label="Words categories"
                   v-model="selected_category_key"
                   :items="category_keys"
                   :loading="category_key_loading"
@@ -85,11 +85,10 @@
                 </template>
               </v-tooltip>
             </template>
-              <v-autocomplete
-                  label="Choose the original language..."
+              <v-select
+                  label="Original language"
                   v-model="selected_language"
                   :items="languages"
-                  :clearable="true"
                   append-icon
                   :disabled="is_parameters_select_disabled"
                   :hide-details="true"
@@ -106,11 +105,10 @@
                 </template>
               </v-tooltip>
             </template>
-              <v-combobox
-                label="Select the number of words to repeat..."
+              <v-select
+                label="Number of words to repeat"
                 v-model="selected_number"
                 :items="numbers"
-                :clearable="true"
                 :disabled="is_parameters_select_disabled"
                 variant="outlined"
                 :hide-details="true"
@@ -120,14 +118,14 @@
           <!--  TYPE OF SELF CHECK  -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Disable if you want the app to check each word translation you type" location="bottom">
+              <v-tooltip text="Enable, if you prefer repeat words without typing their translation" location="bottom">
                 <template v-slot:activator="{ props }" >
                     <v-icon icon="mdi-draw" size="x-large" v-bind="props" />
                 </template>
               </v-tooltip>
             </template>
               <v-checkbox
-                  label="Do manual word translations check"
+                  label="Check words translation"
                   v-model="check_by_typing"
                   :disabled="is_parameters_select_disabled"
                   variant="outlined"
@@ -161,10 +159,17 @@
             <v-card-title>
               Words to repeat
             </v-card-title>
-            <v-card-subtitle>
-              Please, click on the words that you don't remember, so you can see their translation,
-              after completing the practice.
-            </v-card-subtitle>
+            <v-alert
+                v-show="Object.keys(words).length !== 0 && check_by_typing"
+                border-color="blue"
+                title="Note"
+                text="Click on the words, translations of which you do not remember."
+                border="start"
+                class="text-subtitle-2 mt-6"
+                closable
+                close-icon="mdi-close-circle-outline"
+                icon="mdi-cursor-default-click-outline"
+            />
           </v-card-item>
         </v-card>
         <v-card v-if="!is_lesson_complete && check_by_typing" elevation="0" width="100%">
@@ -213,7 +218,7 @@
                       <v-text-field
                           v-model="current_user_input"
                           :persistent-hint="true"
-                          label="Translation..."
+                          label="Translation"
                           variant="outlined"
                           @keyup.enter="checkTranslation"
                           :readonly="post_validation_lock"
@@ -358,9 +363,9 @@ export default {
       selected_number: consts.kDefaultWordNumberChoices[0],
       numbers: consts.kDefaultWordNumberChoices,
       // Checkbox for lesson type
-      check_by_typing: true,
+      check_by_typing: false,
       // Language
-      languages: [consts.Column.ENGLISH, consts.Column.SPANISH],
+      languages: [ consts.Column.ENGLISH, consts.Column.SPANISH ],
       selected_language: consts.Column.ENGLISH,
       // Words to repeat during the lesson
       words: {},
