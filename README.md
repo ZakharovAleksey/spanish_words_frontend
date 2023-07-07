@@ -8,12 +8,7 @@ Link to the site: [repeat-spanish-words](https://zakharovaleksey.github.io/spani
 ### Action items
 
 List of the action items:
-- [X] Make correct authorization
-- [X] Prettify the `axios` get requests
-- [ ] Make icons to the language
-- [ ] Replace copy paste in components by making the separate component and re-use them
 - [ ] Update jwt token scheme with refresh token
-- [X] Make hash routes: to be able to go directly to the `/practice` tab
 
 
 ## Project Setup
