@@ -125,7 +125,7 @@
               </v-tooltip>
             </template>
               <v-checkbox
-                  label="Check words translation"
+                  label="Don't check words translation"
                   v-model="check_by_typing"
                   :disabled="is_parameters_select_disabled"
                   variant="outlined"
