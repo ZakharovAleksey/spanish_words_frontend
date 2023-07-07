@@ -12,6 +12,7 @@ export const LessonResultMessages = {
 export const kMaxRating = 5
 export const kRedirectToLoginPageTime = 3000
 export const kDefaultWordNumberChoices = [10, 25, 50]
+export const kRefreshTokenTime = 25 * 60 * 1000 // 25 minutes x 60 sec x 1000 ms
 
 export const kServerNotRespondError = 'Could not fetch the data: server does not respond.\nPlease, try again later...'
 export const kLoggedOutMessage = `Your credentials have been expired. \n You will be re-directed to the login page in ${kRedirectToLoginPageTime/1000} sec.`

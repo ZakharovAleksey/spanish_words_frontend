@@ -28,6 +28,8 @@ import iconImage from '@/assets/spain-logo.svg'
 
 <script>
 import { useUserStore } from '@/stores/UserStore.js'
+import { kBaseUrl, kRefreshTokenTime } from '@/js/constants'
+
 import axios from "axios";
 
 export default {
@@ -41,6 +43,31 @@ export default {
       axios.defaults.headers.common['Authorization'] = 'JWT ' + access
     } else {
       axios.defaults.headers.common['Authorization'] = ''
+    }
+  },
+  mounted(){
+    // Periodically update the access token
+    setInterval(() => {
+      this.refreshAccess()
+    }, kRefreshTokenTime)
+  },
+  methods: {
+    refreshAccess(){
+      const store = useUserStore()
+      const refresh = store.getRefreshToken()
+
+      axios
+          .post(`${kBaseUrl}/api/v1/jwt/refresh/`, {
+            refresh: refresh
+          })
+          .then((response) => {
+            const access = response.data.access
+
+            store.setAccessToken(access)
+            localStorage.setItem('access', access)
+          }).catch((error) => {
+            console.log('could not refresh token', error)
+          })
     }
   }
 }
