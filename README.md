@@ -8,7 +8,7 @@ Link to the site: [repeat-spanish-words](https://zakharovaleksey.github.io/spani
 ### Action items
 
 List of the action items:
-- [ ] item
+- [ ] possibility to make a request of last words in the table (or all)
 
 
 ## Project Setup
