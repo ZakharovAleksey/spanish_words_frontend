@@ -16,7 +16,7 @@
                 </template>
               </v-tooltip>
             </template>
-              <v-combobox
+              <v-select
                   label="Google sheet"
                   v-model="selected_gsheet"
                   :items="gsheets"
@@ -38,7 +38,7 @@
                 </template>
               </v-tooltip>
             </template>
-              <v-autocomplete
+              <v-select
                   label="Google sheet base column"
                   v-model="selected_category"
                   :items="categories"
@@ -73,7 +73,30 @@
                   multiple
                   hide-details="true"
                   variant="outlined"
-                  class="my-2" />
+                  :menu-props="{ maxWidth : 5 }"
+                  class="my-2"
+              >
+                <!--  SELECT ALL EXTRA CHECKBOX  -->
+                <template v-slot:prepend-item v-if="category_keys.length !== 0">
+                  <v-list-item title="select all" @click="selectAll">
+                    <template v-slot:prepend>
+                      <v-checkbox-btn :model-value="isAllCategoriesSelected"></v-checkbox-btn>
+                    </template>
+                  </v-list-item>
+                  <v-divider class="my-1"></v-divider>
+                </template>
+
+                <!--  CROP THE NUMBER OF SELECTED UNITS IN CASE MANY SELECTED  -->
+                <template v-slot:selection="{ item, index }">
+                  <v-chip v-if="index < 2">
+                    <span>{{ item.title }}</span>
+                  </v-chip>
+                  <span v-if="index === 2" class="text-grey text-caption align-self-center">
+                    (+{{ selected_category_key.length - 2 }} others)
+                  </span>
+                </template>
+
+              </v-autocomplete>
           </v-list-item>
 
           <!--    LANGUAGE      -->
@@ -437,6 +460,13 @@ export default {
       deep: true
     }
   },
+  computed: {
+    isAllCategoriesSelected() {
+      if (this.selected_category_key == null || this.category_keys.length === 0)
+        return false
+      return this.selected_category_key.length === this.category_keys.length
+    }
+  },
   methods: {
     async getThemes() {
       if (this.gsheets.length === 0)
@@ -674,6 +704,13 @@ export default {
     handleResize() {
       this.window.width = window.innerWidth
       this.window.height = window.innerHeight
+    },
+    selectAll(){
+      if (this.selected_category_key == null || this.selected_category_key.length !== this.category_keys.length) {
+        this.selected_category_key = [...this.category_keys]
+      } else {
+        this.selected_category_key = []
+      }
     }
   }
 }
