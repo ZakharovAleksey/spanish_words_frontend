@@ -16,7 +16,7 @@
                 </template>
               </v-tooltip>
             </template>
-              <v-combobox
+              <v-select
                   label="Google sheet"
                   v-model="selected_gsheet"
                   :items="gsheets"
@@ -38,7 +38,7 @@
                 </template>
               </v-tooltip>
             </template>
-              <v-autocomplete
+              <v-select
                   label="Google sheet base column"
                   v-model="selected_category"
                   :items="categories"
@@ -73,10 +73,11 @@
                   multiple
                   hide-details="true"
                   variant="outlined"
+                  :menu-props="{ maxWidth : 5 }"
                   class="my-2"
               >
                 <!--  SELECT ALL EXTRA CHECKBOX  -->
-                <template v-slot:prepend-item>
+                <template v-slot:prepend-item v-if="category_keys.length !== 0">
                   <v-list-item title="select all" @click="selectAll">
                     <template v-slot:prepend>
                       <v-checkbox-btn :model-value="isAllCategoriesSelected"></v-checkbox-btn>
