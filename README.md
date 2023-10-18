@@ -9,6 +9,11 @@ Link to the site: [repeat-spanish-words](https://zakharovaleksey.github.io/spani
 
 List of the action items:
 - [ ] possibility to make a request of last words in the table (or all)
+- [ ] fix the success percent calculation (make minimum 0)
+- [ ] make credentials check before the loading the names of the tables on main page
+- [ ] (opt) look how to add animation etc
+- [ ] (opt) look how to avoid change of the categories input 
+- [ ] (back) make user authorization page to make it more user-oriented
 
 
 ## Project Setup

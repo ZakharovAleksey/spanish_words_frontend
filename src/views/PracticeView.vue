@@ -438,7 +438,7 @@ export default {
     window.addEventListener('resize', this.handleResize)
     this.handleResize()
   },
-  async beforeMount() {
+  async mounted() {
     // Upload the list of all possible spreadsheets
     axios
         .get(`${consts.kBaseUrl}/api/spreadsheet/titles/`)
@@ -611,7 +611,7 @@ export default {
       this.is_parameters_select_disabled = false
     },
     generateUserMessageOnLessonComplete(){
-      const percent = this.success_percent / consts.kMaxRating * 100.
+      const percent = Math.max(this.success_percent / consts.kMaxRating * 100., 0)
       const intro = `You remember ${percent}% of the words.`
       if (percent > consts.MinSuccessThresholds.GOOD) {
         return intro + consts.LessonResultMessages.GOOD
