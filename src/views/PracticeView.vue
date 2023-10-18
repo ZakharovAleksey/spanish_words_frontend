@@ -78,9 +78,15 @@
               >
                 <!--  SELECT ALL EXTRA CHECKBOX  -->
                 <template v-slot:prepend-item v-if="category_keys.length !== 0">
-                  <v-list-item title="select all" @click="selectAll">
+                  <v-list-item title="all categories" @click="selectAll">
                     <template v-slot:prepend>
                       <v-checkbox-btn :model-value="isAllCategoriesSelected"></v-checkbox-btn>
+                    </template>
+                  </v-list-item>
+
+                  <v-list-item title="latest added words" @click="selectLatest">
+                    <template v-slot:prepend>
+                      <v-checkbox-btn :model-value="select_latest_words"></v-checkbox-btn>
                     </template>
                   </v-list-item>
                   <v-divider class="my-1"></v-divider>
@@ -365,6 +371,7 @@ import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
 import * as consts from '@/js/constants'
+import {kLatestWordsTag} from "@/js/constants";
 
 export default {
   data() {
@@ -382,6 +389,7 @@ export default {
       selected_category_key: null,
       category_keys: [],
       category_key_loading: false,
+      select_latest_words: false,
       // Number of the words
       selected_number: consts.kDefaultWordNumberChoices[0],
       numbers: consts.kDefaultWordNumberChoices,
@@ -453,6 +461,20 @@ export default {
 
       this.getSubThemes()
     },
+    selected_category_key: function () {
+      if (this.selected_category_key == null || this.selected_category_key.length === 0) {
+        this.select_latest_words = false
+        return
+      }
+
+      if (this.select_latest_words && this.selected_category_key.length > 1) {
+        const index = this.selected_category_key.indexOf(consts.kLatestWordsTag)
+        if (index != -1) {
+          this.selected_category_key.splice(index, 1)
+        }
+        this.select_latest_words = false
+      }
+    },
     window: {
       handler() {
         this.top_class = this.window.width < 600 ? 'flex-column' : ''
@@ -516,8 +538,9 @@ export default {
       this.is_parameters_select_disabled = true
 
       this.words_loading = true
+      const api_tail = this.select_latest_words ? 'latest_values' : 'random_values'
       axios
-          .get(`${consts.kBaseUrl}/api/worksheet/random_values/`, {
+          .get(`${consts.kBaseUrl}/api/worksheet/${api_tail}/`, {
             params: {
               title: this.selected_gsheet,
               filter_column_id: this.selected_category,
@@ -711,6 +734,17 @@ export default {
       } else {
         this.selected_category_key = []
       }
+    },
+    selectLatest(){
+      if (!this.select_latest_words) {
+        this.selected_category_key = [ consts.kLatestWordsTag ]
+      } else {
+        const index = this.selected_category_key.indexOf(consts.kLatestWordsTag)
+        if (index != -1) {
+          this.selected_category_key.splice(index, 1)
+        }
+      }
+      this.select_latest_words = !this.select_latest_words
     }
   }
 }
