@@ -4,6 +4,7 @@
     <v-text-field variant="outlined" :readonly="true">{{ exercise_data['en'] }}</v-text-field>
     <v-text-field
         v-model="user_input"
+        :readonly="is_readonly"
         :persistent-hint="true"
         label="Translation"
         variant="outlined"
@@ -21,7 +22,8 @@ export default {
   props: {
     exercise_data: Object,
     clean_exercise: Boolean,
-    show_error_message: Boolean
+    show_error_message: Boolean,
+    is_readonly: Boolean
   },
   data() {
     return {

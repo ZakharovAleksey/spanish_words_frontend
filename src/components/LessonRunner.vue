@@ -17,6 +17,7 @@ import * as consts from '@/js/constants'
             :exercise_data="lesson_data[current_exercise_id]"
             :show_error_message="show_error_message"
             :clean_exercise="force_clean_exercise_content"
+            :is_readonly="make_child_readonly"
             @exercise-check-enabled="handleIfButtonEnabled"
             @is-exercise-done-correct="handleExerciseAnswer"
             @exercise-cleaned="handleCleandExercise"
@@ -114,7 +115,8 @@ export default {
       // Otherwise, it 2d initial exercise state = 1st final exercise state (text, etc.)
       force_clean_exercise_content: false,
       // TODO: comment
-      show_error_message: false
+      show_error_message: false,
+      make_child_readonly: false,
     }
   },
   computed: {
@@ -165,6 +167,7 @@ export default {
         }
         // Force child component to show error message
         this.show_error_message = !this.current_answer_info.correct
+        this.make_child_readonly = true
       } else {
         if (this.isLastExercise()) {
           this.lesson_state = LessonState.COMPLETED
@@ -174,6 +177,7 @@ export default {
 
           this.force_clean_exercise_content = true
         }
+        this.make_child_readonly = false
       }
     }
   }
