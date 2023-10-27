@@ -12,7 +12,7 @@
       ></v-text-field>
     </div>
     <div class="save-alert-space">
-      <v-fade-transition v-if="show_error_message">
+      <div v-if="show_error_message">
         <v-alert
             v-if="!is_user_input_correct"
             border-color="red"
@@ -40,8 +40,8 @@
             </div>
               Good job! Can you do the next one?
           </div>
-        </v-alert>>
-      </v-fade-transition>
+        </v-alert>
+      </div>
     </div>
   </div>
 </template>

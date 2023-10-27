@@ -34,7 +34,7 @@ import * as consts from '@/js/constants'
             variant="elevated"
             rounded="lg"
             size="large"
-            block="true"
+            :block="true"
             class="text-uppercase"
         >{{ button.text }}
         </v-btn>
