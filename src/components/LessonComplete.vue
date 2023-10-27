@@ -95,6 +95,7 @@ export default {
   props: {
     words_with_mistakes_count: Number,
     total_words_count: Number,
+    time_spent: Date | String
   },
   computed: {
     percent() {
@@ -116,7 +117,7 @@ export default {
         {
           title: 'time',
           icon: 'mdi-clock-time-two-outline',
-          text: '1:55',
+          text: this.time_spent,
           style: 'round-border time-background'
         },
       ]

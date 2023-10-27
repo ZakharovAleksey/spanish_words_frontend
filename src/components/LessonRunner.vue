@@ -44,6 +44,7 @@ import * as consts from '@/js/constants'
         v-else-if="is_lesson_completed"
         :words_with_mistakes_count="incorrect_answers.length"
         :total_words_count="lesson_data.length"
+        :time_spent="time_spent"
         @lesson-is-finished="finishLesson"
     />
     <incorrect-answers
@@ -64,6 +65,7 @@ import * as consts from '@/js/constants'
  */
 
 import * as consts from '@/js/constants'
+import {timeSpentSince} from '@/js/CommonFunctions'
 
 // Child components
 import TranslateSingleWordView from '@/components/exercises/TranslateSingleWord.vue'
@@ -115,10 +117,6 @@ export default {
         es: '',
         en: ''
       },
-      practice_result: {
-        time_spent: 0,
-        result_color: ''
-      },
       button: ButtonStateProperties[ButtonState.CHECK],
       lesson_state: LessonState.IN_PROGRESS,
       // For 2 exercises of the same type in a row, we need to clean up the child component.
@@ -128,7 +126,12 @@ export default {
       show_error_message: false,
       // On the moment when the answer is checked and before running the next one lock the child
       make_child_readonly: false,
+      //
+      time_spent: ''
     }
+  },
+  created() {
+    this.time_spent = new Date()
   },
   computed: {
     is_lesson_in_progress() {
@@ -179,10 +182,13 @@ export default {
         // Force child component to show error message
         this.show_error_message = true
         this.make_child_readonly = true
-      } else {
+      }
+      else {
         if (this.isLastExercise()) {
           this.lesson_state = LessonState.COMPLETED
-        } else {
+          this.time_spent = timeSpentSince(this.time_spent)
+        }
+        else {
           this.button = ButtonStateProperties[ButtonState.CHECK]
           this.current_exercise_id += 1
 

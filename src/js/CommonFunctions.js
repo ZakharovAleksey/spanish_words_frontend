@@ -1,3 +1,5 @@
+import * as constants from '@/js/constants'
+
 /**
  * Function prepares words before equality check.
  * Actions:
@@ -33,4 +35,17 @@ export function compareSpanishWords(left, right) {
  */
 export function isValueInRange(value, min, max) {
     return value >= min && value < max
+}
+
+/**
+ * Calculates the time difference between the current time and the given one
+ *
+ * @param start         Start time for the timer
+ * @returns {string}    Time elapsed since the start time in format "{min}:{sec}"
+ */
+export function timeSpentSince(start) {
+    const delta = (new Date() - start) / 1000 // Convert to seconds
+    const min = Math.trunc(delta / constants.kSecInMin)
+    const sec = Math.round(delta - min * constants.kSecInMin)
+    return `${min}:${sec}`
 }
