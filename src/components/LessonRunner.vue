@@ -5,13 +5,17 @@ import * as consts from '@/js/constants'
 <template>
   <v-container class="d-flex align-center justify-center fill-height">
     <v-card v-if="is_lesson_in_progress" min-width="360" class="pa-2" variant="flat">
-      <v-progress-linear
-          v-model="progress_bar_count"
-          :max="lesson_data.length"
-          :height="13"
-          rounded
-          color="green"/>
-      <v-card-text class="text-center">
+      <v-container class="text-center lesson-area">
+
+        <v-progress-linear
+            v-model="progress_bar_count"
+            :max="lesson_data.length"
+            :height="13"
+            rounded
+            color="green"
+            class="my-3"
+        />
+
         <translate-single-word-view
             v-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.TRANSLATE_SINGLE_WORD"
             :exercise_data="lesson_data[current_exercise_id]"
@@ -22,13 +26,19 @@ import * as consts from '@/js/constants'
             @is-exercise-done-correct="handleExerciseAnswer"
             @exercise-cleaned="handleCleandExercise"
         />
+
         <v-btn
             :color="button.color"
             :disabled="button.disabled"
             @click="onButtonClick"
+            variant="elevated"
+            rounded="lg"
+            size="large"
+            block="true"
+            class="text-uppercase"
         >{{ button.text }}
         </v-btn>
-      </v-card-text>
+      </v-container>
     </v-card>
     <lesson-complete
         v-else-if="is_lesson_completed"
@@ -65,7 +75,7 @@ const ButtonState = {CHECK: 0, CONTINUE: 1, GOT_IT: 2}
 const ButtonStateProperties = [
   {
     state: ButtonState.CHECK,
-    color: 'warning',
+    color: 'success',
     disabled: true,
     text: 'check'
   },
@@ -114,8 +124,9 @@ export default {
       // For 2 exercises of the same type in a row, we need to clean up the child component.
       // Otherwise, it 2d initial exercise state = 1st final exercise state (text, etc.)
       force_clean_exercise_content: false,
-      // TODO: comment
+      // This value controls the behaviour presence/absence of error message in the child component
       show_error_message: false,
+      // On the moment when the answer is checked and before running the next one lock the child
       make_child_readonly: false,
     }
   },
@@ -166,7 +177,7 @@ export default {
           this.incorrect_answers.push(tmp)
         }
         // Force child component to show error message
-        this.show_error_message = !this.current_answer_info.correct
+        this.show_error_message = true
         this.make_child_readonly = true
       } else {
         if (this.isLastExercise()) {
@@ -187,4 +198,7 @@ export default {
 
 <style scoped>
 
+.lesson-area {
+  min-width: 425px;
+}
 </style>
