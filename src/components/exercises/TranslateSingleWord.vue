@@ -85,10 +85,6 @@ export default {
       const is_string_empty = this.user_input === ''
       this.$emit('exerciseCheckEnabled', !is_string_empty)
 
-      // Update exercise status: correct / incorrect
-      // const is_user_input_correct = compareSpanishWords(
-      //     this.user_input, this.exercise_data['es']
-      // )
       this.$emit('isExerciseDoneCorrect', {
         correct: this.is_user_input_correct,
         en: this.exercise_data['en'],

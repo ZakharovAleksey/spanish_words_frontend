@@ -27,6 +27,14 @@ import * as consts from '@/js/constants'
             @exercise-cleaned="handleCleandExercise"
         />
 
+        <translate-words-oral-view
+            v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.TRANSLATE_WORDS_ORAL"
+            :exercise_data="lesson_data[current_exercise_id]"
+            :is_readonly="make_child_readonly"
+            @exercise-check-enabled="handleIfButtonEnabled"
+            @is-exercise-done-correct="handleExerciseAnswerWithMultiWords"
+        />
+
         <v-btn
             :color="button.color"
             :disabled="button.disabled"
@@ -43,7 +51,7 @@ import * as consts from '@/js/constants'
     <lesson-complete
         v-else-if="is_lesson_completed"
         :words_with_mistakes_count="incorrect_answers.length"
-        :total_words_count="lesson_data.length"
+        :total_words_count="total_words_count"
         :time_spent="time_spent"
         @lesson-is-finished="finishLesson"
     />
@@ -51,6 +59,7 @@ import * as consts from '@/js/constants'
         v-else-if="is_lesson_finished"
         :incorrect_answers="incorrect_answers"
     />
+
   </v-container>
 </template>
 
@@ -69,6 +78,7 @@ import {timeSpentSince} from '@/js/CommonFunctions'
 
 // Child components
 import TranslateSingleWordView from '@/components/exercises/TranslateSingleWord.vue'
+import TranslateWordsOralView from '@/components/exercises/TranslateWordsOral.vue'
 import LessonComplete from '@/components/LessonComplete.vue'
 import IncorrectAnswers from '@/components/IncorrectAnswers.vue'
 
@@ -101,15 +111,37 @@ export default {
   components: {
     TranslateSingleWordView,
     LessonComplete,
-    IncorrectAnswers
+    IncorrectAnswers,
+    TranslateWordsOralView
   },
   data() {
     return {
-      practice_type: consts.PracticeType.TRANSLATE_WORDS_WRITING,
-      lesson_data: [
-        {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'hola', en: 'hello'},
-        {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'adios', en: 'by'}
-      ],
+      // practice_type: consts.PracticeType.TRANSLATE_WORDS_WRITING,
+      // lesson_data: [
+      //   {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'hola', en: 'hello'},
+      //   {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'adios', en: 'by'}
+      // ],
+      // TODO: when request parsed, add icon & color tag to each element  user_knows_translation
+      practice_type: consts.PracticeType.TRANSLATE_WORDS_ORAL,
+      lesson_data: [{
+        exercise_type: "translate_words_oral",
+        word_translation: [
+          {
+            en: "hello",
+            es: "hola",
+            icon: consts.WordStatusMdiIcon.REMEMBERED,
+            color: consts.Color.GOOD,
+            user_knows_translation: true
+          },
+          {
+            en: "by",
+            es: "adios",
+            icon: consts.WordStatusMdiIcon.REMEMBERED,
+            color: consts.Color.GOOD,
+            user_knows_translation: true
+          }
+        ]
+      }],
       incorrect_answers: [],
       current_exercise_id: 0,
       current_answer_info: {
@@ -147,6 +179,11 @@ export default {
       return this.isLastExercise() && this.button.state !== ButtonState.CHECK ?
           this.current_exercise_id + 1 :
           this.current_exercise_id
+    },
+    total_words_count() {
+      return this.isMultiWordsCheckExercise() ?
+          this.lesson_data[0]['word_translation'].length :
+          this.lesson_data.length
     }
   },
   methods: {
@@ -157,9 +194,29 @@ export default {
     finishLesson() {
       this.lesson_state = LessonState.FINISHED
     },
+    isMultiWordsCheckExercise() {
+      return this.practice_type === consts.PracticeType.TRANSLATE_WORDS_ORAL
+    },
+    isAnswerCorrect() {
+      return this.isMultiWordsCheckExercise() ?
+          this.incorrect_answers.length === 0 :
+          this.current_answer_info.correct
+    },
     // Event functions
     handleIfButtonEnabled(is_enabled) {
       this.button.disabled = !is_enabled
+    },
+    handleExerciseAnswerWithMultiWords(answer_info) {
+      if (answer_info.correct) {
+        this.incorrect_answers = this.incorrect_answers.filter(obj => {
+          return obj.en !== answer_info.en || obj.es !== answer_info.es;
+        });
+      }
+      else {
+        let tmp = answer_info
+        delete tmp.correct
+        this.incorrect_answers.push(tmp)
+      }
     },
     handleExerciseAnswer(answer_info) {
       this.current_answer_info = answer_info
@@ -170,20 +227,21 @@ export default {
     },
     onButtonClick() {
       if (this.button.state === ButtonState.CHECK) {
-        this.button = (this.current_answer_info.correct) ?
+        this.button = this.isAnswerCorrect() ?
             ButtonStateProperties[ButtonState.CONTINUE] :
             ButtonStateProperties[ButtonState.GOT_IT]
 
-        if (!this.current_answer_info.correct) {
+        if (!this.isMultiWordsCheckExercise() && !this.current_answer_info.correct) {
+          // Handle single-word response
           let tmp = this.current_answer_info
           delete tmp.correct
           this.incorrect_answers.push(tmp)
         }
+
         // Force child component to show error message
         this.show_error_message = true
         this.make_child_readonly = true
-      }
-      else {
+      } else {
         if (this.isLastExercise()) {
           this.lesson_state = LessonState.COMPLETED
           this.time_spent = timeSpentSince(this.time_spent)
@@ -194,6 +252,7 @@ export default {
 
           this.force_clean_exercise_content = true
         }
+
         this.make_child_readonly = false
       }
     }
