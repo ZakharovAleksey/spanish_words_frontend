@@ -37,6 +37,18 @@ import * as consts from '@/js/constants'
             @is-exercise-done-correct="handleExerciseAnswerWithMultiWords"
         />
 
+        <translate-sentence
+            v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.TRANSLATE_SENTENCE"
+            :exercise_data="lesson_data[current_exercise_id]"
+            :translate="translate"
+            :show_error_message="show_error_message"
+            :clean_exercise="force_clean_exercise_content"
+            :is_readonly="make_child_readonly"
+            @exercise-check-enabled="handleIfButtonEnabled"
+            @is-exercise-done-correct="handleExerciseAnswer"
+            @exercise-cleaned="handleCleandExercise"
+        />
+
         <v-btn
             :color="button.color"
             :disabled="button.disabled"
@@ -81,6 +93,7 @@ import {timeSpentSince} from '@/js/CommonFunctions'
 // Child components
 import TranslateSingleWordView from '@/components/exercises/TranslateSingleWord.vue'
 import TranslateWordsOralView from '@/components/exercises/TranslateWordsOral.vue'
+import TranslateSentence from '@/components/exercises/TranslateSentence.vue'
 import LessonComplete from '@/components/LessonComplete.vue'
 import IncorrectAnswers from '@/components/IncorrectAnswers.vue'
 
@@ -114,7 +127,8 @@ export default {
     TranslateSingleWordView,
     LessonComplete,
     IncorrectAnswers,
-    TranslateWordsOralView
+    TranslateWordsOralView,
+    TranslateSentence
   },
   data() {
     return {
@@ -128,26 +142,33 @@ export default {
       //   {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'adios', en: 'by'}
       // ],
       // TODO: when request parsed, add icon & color tag to each element  user_knows_translation
-      practice_type: consts.PracticeType.TRANSLATE_WORDS_ORAL,
-      lesson_data: [{
-        exercise_type: "translate_words_oral",
-        word_translation: [
-          {
-            en: "hello",
-            es: "hola",
-            icon: consts.WordStatusMdiIcon.REMEMBERED,
-            color: consts.Color.GOOD,
-            user_knows_translation: true
-          },
-          {
-            en: "by",
-            es: "adios",
-            icon: consts.WordStatusMdiIcon.REMEMBERED,
-            color: consts.Color.GOOD,
-            user_knows_translation: true
-          }
-        ]
-      }],
+      // practice_type: consts.PracticeType.TRANSLATE_WORDS_ORAL,
+      // lesson_data: [{
+      //   exercise_type: "translate_words_oral",
+      //   word_translation: [
+      //     {
+      //       en: "hello",
+      //       es: "hola",
+      //       icon: consts.WordStatusMdiIcon.REMEMBERED,
+      //       color: consts.Color.GOOD,
+      //       user_knows_translation: true
+      //     },
+      //     {
+      //       en: "by",
+      //       es: "adios",
+      //       icon: consts.WordStatusMdiIcon.REMEMBERED,
+      //       color: consts.Color.GOOD,
+      //       user_knows_translation: true
+      //     }
+      //   ]
+      // }],
+      practice_type: consts.PracticeType.COMPLEX,
+      lesson_data: [
+        {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'hola', en: 'hello'},
+        {exercise_type: consts.ExerciseType.TRANSLATE_SENTENCE, es: 'adios', en: 'by',
+          sentence_to_translate: 'Hello what is your name',
+          correct_translation: 'Hola como se llama'}
+      ],
       incorrect_answers: [],
       current_exercise_id: 0,
       current_answer_info: {
@@ -210,6 +231,7 @@ export default {
     },
     // Event functions
     handleIfButtonEnabled(is_enabled) {
+      console.log('here', is_enabled)
       this.button.disabled = !is_enabled
     },
     handleExerciseAnswerWithMultiWords(answer_info) {
@@ -257,6 +279,8 @@ export default {
           this.current_exercise_id += 1
 
           this.force_clean_exercise_content = true
+          this.show_error_message = false
+          this.button.disabled = true
         }
 
         this.make_child_readonly = false
