@@ -61,6 +61,18 @@ import * as consts from '@/js/constants'
             @exercise-cleaned="handleCleandExercise"
         />
 
+        <fill-sentence-gap
+            v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.FILL_GAP_IN_SENTENCE"
+            :exercise_data="lesson_data[current_exercise_id]"
+            :translate="translate"
+            :show_error_message="show_error_message"
+            :clean_exercise="force_clean_exercise_content"
+            :is_readonly="make_child_readonly"
+            @exercise-check-enabled="handleIfButtonEnabled"
+            @is-exercise-done-correct="handleExerciseAnswer"
+            @exercise-cleaned="handleCleandExercise"
+        />
+
         <v-btn
             :color="button.color"
             :disabled="button.disabled"
@@ -107,6 +119,7 @@ import TranslateSingleWordView from '@/components/exercises/TranslateSingleWord.
 import TranslateWordsOralView from '@/components/exercises/TranslateWordsOral.vue'
 import TranslateSentence from '@/components/exercises/TranslateSentence.vue'
 import ChooseCorrectTranslation from '@/components/exercises/ChooseCorrectTranslation.vue'
+import FillSentenceGap from '@/components/exercises/FillSentenceGap.vue'
 import LessonComplete from '@/components/LessonComplete.vue'
 import IncorrectAnswers from '@/components/IncorrectAnswers.vue'
 
@@ -142,7 +155,8 @@ export default {
     IncorrectAnswers,
     TranslateWordsOralView,
     TranslateSentence,
-    ChooseCorrectTranslation
+    ChooseCorrectTranslation,
+    FillSentenceGap
   },
   data() {
     return {
@@ -178,16 +192,25 @@ export default {
       // }],
       practice_type: consts.PracticeType.COMPLEX,
       lesson_data: [
-        {exercise_type: consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION, es: 'hola', en: 'hello',
+        {
+          exercise_type: consts.ExerciseType.FILL_GAP_IN_SENTENCE, es: 'hola', en: 'hello',
+          sentence_with_gap: "___, como se llama?",
+          choices: ["hola", "adios", "chao", "hasta pronto"]
+        },
+        {
+          exercise_type: consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION, es: 'hola', en: 'hello',
           choices: ["adios", "hola", "chao", "hasta pronto"]
         },
-        {exercise_type: consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION, es: 'adios', en: 'by',
+        {
+          exercise_type: consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION, es: 'adios', en: 'by',
           choices: ["hola", "adios", "chao", "hasta pronto"]
         },
         {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'hola', en: 'hello'},
-        {exercise_type: consts.ExerciseType.TRANSLATE_SENTENCE, es: 'adios', en: 'by',
+        {
+          exercise_type: consts.ExerciseType.TRANSLATE_SENTENCE, es: 'adios', en: 'by',
           sentence_to_translate: 'Hello what is your name',
-          correct_translation: 'Hola como se llama'}
+          correct_translation: 'Hola como se llama'
+        }
       ],
       incorrect_answers: [],
       current_exercise_id: 0,
@@ -259,8 +282,7 @@ export default {
         this.incorrect_answers = this.incorrect_answers.filter(obj => {
           return obj.en !== answer_info.en || obj.es !== answer_info.es;
         });
-      }
-      else {
+      } else {
         let tmp = answer_info
         delete tmp.correct
         this.incorrect_answers.push(tmp)
@@ -293,8 +315,7 @@ export default {
         if (this.isLastExercise()) {
           this.lesson_state = LessonState.COMPLETED
           this.time_spent = timeSpentSince(this.time_spent)
-        }
-        else {
+        } else {
           this.button = ButtonStateProperties[ButtonState.CHECK]
           this.current_exercise_id += 1
 
