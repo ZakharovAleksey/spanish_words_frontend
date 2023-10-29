@@ -49,6 +49,18 @@ import * as consts from '@/js/constants'
             @exercise-cleaned="handleCleandExercise"
         />
 
+        <choose-correct-translation
+            v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION"
+            :exercise_data="lesson_data[current_exercise_id]"
+            :translate="translate"
+            :show_error_message="show_error_message"
+            :clean_exercise="force_clean_exercise_content"
+            :is_readonly="make_child_readonly"
+            @exercise-check-enabled="handleIfButtonEnabled"
+            @is-exercise-done-correct="handleExerciseAnswer"
+            @exercise-cleaned="handleCleandExercise"
+        />
+
         <v-btn
             :color="button.color"
             :disabled="button.disabled"
@@ -94,6 +106,7 @@ import {timeSpentSince} from '@/js/CommonFunctions'
 import TranslateSingleWordView from '@/components/exercises/TranslateSingleWord.vue'
 import TranslateWordsOralView from '@/components/exercises/TranslateWordsOral.vue'
 import TranslateSentence from '@/components/exercises/TranslateSentence.vue'
+import ChooseCorrectTranslation from '@/components/exercises/ChooseCorrectTranslation.vue'
 import LessonComplete from '@/components/LessonComplete.vue'
 import IncorrectAnswers from '@/components/IncorrectAnswers.vue'
 
@@ -128,7 +141,8 @@ export default {
     LessonComplete,
     IncorrectAnswers,
     TranslateWordsOralView,
-    TranslateSentence
+    TranslateSentence,
+    ChooseCorrectTranslation
   },
   data() {
     return {
@@ -164,6 +178,12 @@ export default {
       // }],
       practice_type: consts.PracticeType.COMPLEX,
       lesson_data: [
+        {exercise_type: consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION, es: 'hola', en: 'hello',
+          choices: ["adios", "hola", "chao", "hasta pronto"]
+        },
+        {exercise_type: consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION, es: 'adios', en: 'by',
+          choices: ["hola", "adios", "chao", "hasta pronto"]
+        },
         {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'hola', en: 'hello'},
         {exercise_type: consts.ExerciseType.TRANSLATE_SENTENCE, es: 'adios', en: 'by',
           sentence_to_translate: 'Hello what is your name',
