@@ -19,6 +19,7 @@ import * as consts from '@/js/constants'
         <translate-single-word-view
             v-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.TRANSLATE_SINGLE_WORD"
             :exercise_data="lesson_data[current_exercise_id]"
+            :translate="translate"
             :show_error_message="show_error_message"
             :clean_exercise="force_clean_exercise_content"
             :is_readonly="make_child_readonly"
@@ -30,6 +31,7 @@ import * as consts from '@/js/constants'
         <translate-words-oral-view
             v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.TRANSLATE_WORDS_ORAL"
             :exercise_data="lesson_data[current_exercise_id]"
+            :translate="translate"
             :is_readonly="make_child_readonly"
             @exercise-check-enabled="handleIfButtonEnabled"
             @is-exercise-done-correct="handleExerciseAnswerWithMultiWords"
@@ -116,6 +118,10 @@ export default {
   },
   data() {
     return {
+      translate: {
+        from: 'en',
+        to: 'es'
+      },
       // practice_type: consts.PracticeType.TRANSLATE_WORDS_WRITING,
       // lesson_data: [
       //   {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'hola', en: 'hello'},

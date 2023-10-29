@@ -2,7 +2,7 @@
   <div>
     <p class="text-left title mb-2"><b>Translate this word:</b></p>
     <div>
-      <v-text-field variant="outlined" :readonly="true">{{ exercise_data['en'] }}</v-text-field>
+      <v-text-field variant="outlined" :readonly="true">{{ exercise_data[translate.from] }}</v-text-field>
       <v-text-field
           v-model="user_input"
           :readonly="is_readonly"
@@ -24,7 +24,7 @@
               <v-icon class="mr-1">mdi-close-circle</v-icon>
               <b class="title">Incorrect</b>
             </div>
-            <b>Correct Answer:</b> {{ exercise_data['es'] }}
+            <b>Correct Answer:</b> {{ exercise_data[translate.to] }}
           </div>
         </v-alert>
         <v-alert
@@ -53,6 +53,7 @@ export default {
   name: "TranslateSingleWord",
   props: {
     exercise_data: Object,
+    translate: Object,
     clean_exercise: Boolean,
     show_error_message: Boolean,
     is_readonly: Boolean
@@ -76,7 +77,7 @@ export default {
   },
   computed: {
     is_user_input_correct() {
-      return compareSpanishWords(this.user_input, this.exercise_data['es'])
+      return compareSpanishWords(this.user_input, this.exercise_data[this.translate.to])
     }
   },
   methods: {

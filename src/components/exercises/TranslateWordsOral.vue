@@ -1,5 +1,6 @@
 <template>
   <div class="my-4">
+    <p class="text-left title mb-2"><b>Click on the words, with unknown translations:</b></p>
     <v-chip
         v-for="item in exercise_data['word_translation']"
         :prepend-icon="item.icon"
@@ -7,7 +8,7 @@
         :color="item.color"
         size="large"
         @click="updateWordStatus(item)"
-    >{{ item.es }}
+    >{{ item[translate.from] }}
     </v-chip>
   </div>
 </template>
@@ -20,6 +21,7 @@ export default {
   name: "TranslateSingleWord",
   props: {
     exercise_data: Object,
+    translate: Object,
     clean_exercise: Boolean,
     show_error_message: Boolean,
     is_readonly: Boolean
