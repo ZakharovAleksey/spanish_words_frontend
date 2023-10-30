@@ -142,19 +142,22 @@
           <!--  TYPE OF SELF CHECK  -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Enable, if you prefer repeat words without typing their translation"
+              <v-tooltip text="Choose the practise type"
                          location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon icon="mdi-draw" size="x-large" v-bind="props"/>
+                  <v-icon icon="mdi-animation" size="x-large" v-bind="props"/>
                 </template>
               </v-tooltip>
             </template>
-            <v-checkbox
-                label="Don't check words translation"
-                v-model="check_by_typing"
+            <v-select
+                label="Practice type"
+                v-model="practice_type"
+                :items="practices"
                 :disabled="is_parameters_select_disabled"
                 variant="outlined"
                 :hide-details="true"
+                item-title="title"
+                item-value="value"
                 class="my-2"/>
           </v-list-item>
         </v-list>
@@ -191,7 +194,6 @@
     </v-col>
 
   </v-row>
-
 </template>
 
 <script>
@@ -225,23 +227,22 @@ export default {
       // Number of the words
       selected_number: consts.kDefaultWordNumberChoices[0],
       numbers: consts.kDefaultWordNumberChoices,
-      // Checkbox for lesson type
-      check_by_typing: false,
       // Language
       languages: [consts.Column.ENGLISH, consts.Column.SPANISH],
       selected_language: consts.Column.ENGLISH,
+      // Checkbox for lesson type
+      practice_type: consts.PracticeType.TRANSLATE_WORDS_WRITING,
+      practices: consts.PracticesList,
       // Words to repeat during the lesson
-
       words_loading: false,
       is_lesson_complete: false,
+
 
       //!
       translate: {
         from: 'en',
         to: 'es'
       },
-      // TODO: remove
-      practice_type: consts.PracticeType.TRANSLATE_WORDS_WRITING,
       lesson_data: []
     }
   },
@@ -285,13 +286,6 @@ export default {
         this.translate.from = 'es'
         this.translate.to = 'en'
       }
-    },
-    check_by_typing: function () {
-      // TODO: remove this when backend part is ready
-      // This is a temporary solution till backend did not provide the type od each exercise
-      this.practice_type = !this.check_by_typing ?
-          consts.PracticeType.TRANSLATE_WORDS_WRITING :
-          consts.PracticeType.TRANSLATE_WORDS_ORAL
     }
   },
   computed: {
@@ -465,6 +459,6 @@ export default {
 
 <style scoped>
 .my-button {
-  min-width: 256px;
+  min-width: 312px;
 }
 </style>

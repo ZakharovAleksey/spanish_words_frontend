@@ -11,6 +11,21 @@ export const PracticeType = {
     COMPLEX: 'complex'
 }
 
+export const PracticesList = [
+    {
+        value: PracticeType.TRANSLATE_WORDS_WRITING,
+        title: 'Translate words in writing'
+    },
+    {
+        value: PracticeType.TRANSLATE_WORDS_ORAL,
+        title: 'Translate words orally'
+    },
+    // {
+    //     value: PracticeType.COMPLEX,
+    //     title: 'Complex. GPT-based different exercises'
+    // }
+]
+
 /**
  * Possible types of exercises.
  * There could be exercises for one word, but could be exercises for several words practice.

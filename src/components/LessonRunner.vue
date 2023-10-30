@@ -3,7 +3,7 @@ import * as consts from '@/js/constants'
 </script>
 
 <template>
-  <v-container v-if="isLessonDataNotEmpty()" class="d-flex align-center justify-center fill-height">
+  <v-container v-if="isLessonDataNotEmpty()" class="d-flex justify-center fill-height">
     <v-card v-if="is_lesson_in_progress" min-width="360" class="pa-2" variant="flat">
       <v-container class="text-center lesson-area">
 
@@ -26,6 +26,7 @@ import * as consts from '@/js/constants'
             @exercise-check-enabled="handleIfButtonEnabled"
             @is-exercise-done-correct="handleExerciseAnswer"
             @exercise-cleaned="handleCleandExercise"
+            @check-exercise="onButtonClick"
         />
 
         <translate-words-oral-view
@@ -47,6 +48,7 @@ import * as consts from '@/js/constants'
             @exercise-check-enabled="handleIfButtonEnabled"
             @is-exercise-done-correct="handleExerciseAnswer"
             @exercise-cleaned="handleCleandExercise"
+            @check-exercise="onButtonClick"
         />
 
         <choose-correct-translation

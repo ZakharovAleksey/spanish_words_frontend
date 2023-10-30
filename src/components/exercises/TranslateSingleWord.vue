@@ -9,6 +9,7 @@
           label="Translation"
           variant="outlined"
           @input="notifyParent"
+          @keyup.enter="handleEnterButton"
       ></v-text-field>
     </div>
     <div class="save-alert-space">
@@ -63,7 +64,7 @@ export default {
       user_input: ''
     }
   },
-  emits: ['exerciseCheckEnabled', 'isExerciseDoneCorrect', 'exerciseCleaned'],
+  emits: ['exerciseCheckEnabled', 'isExerciseDoneCorrect', 'exerciseCleaned', 'checkExercise'],
   watch: {
     clean_exercise(new_value) {
       if (new_value) {
@@ -91,6 +92,9 @@ export default {
         en: this.exercise_data['en'],
         es: this.exercise_data['es']
       })
+    },
+    handleEnterButton() {
+      this.$emit('checkExercise')
     }
   }
 }
