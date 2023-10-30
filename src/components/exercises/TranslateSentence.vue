@@ -88,7 +88,6 @@ export default {
     notifyParent() {
       // Update check button state
       const is_string_empty = this.user_input === ''
-      console.log('child', `"${this.user_input}"`, is_string_empty)
       this.$emit('exerciseCheckEnabled', !is_string_empty)
 
       this.$emit('isExerciseDoneCorrect', {

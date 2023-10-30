@@ -3,7 +3,7 @@ import * as consts from '@/js/constants'
 </script>
 
 <template>
-  <v-container class="d-flex align-center justify-center fill-height">
+  <v-container v-if="isLessonDataNotEmpty()" class="d-flex align-center justify-center fill-height">
     <v-card v-if="is_lesson_in_progress" min-width="360" class="pa-2" variant="flat">
       <v-container class="text-center lesson-area">
 
@@ -17,7 +17,7 @@ import * as consts from '@/js/constants'
         />
 
         <translate-single-word-view
-            v-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.TRANSLATE_SINGLE_WORD"
+            v-if="isExerciseType(consts.ExerciseType.TRANSLATE_SINGLE_WORD)"
             :exercise_data="lesson_data[current_exercise_id]"
             :translate="translate"
             :show_error_message="show_error_message"
@@ -29,7 +29,7 @@ import * as consts from '@/js/constants'
         />
 
         <translate-words-oral-view
-            v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.TRANSLATE_WORDS_ORAL"
+            v-else-if="isExerciseType(consts.ExerciseType.TRANSLATE_WORDS_ORAL)"
             :exercise_data="lesson_data[current_exercise_id]"
             :translate="translate"
             :is_readonly="make_child_readonly"
@@ -38,7 +38,7 @@ import * as consts from '@/js/constants'
         />
 
         <translate-sentence
-            v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.TRANSLATE_SENTENCE"
+            v-else-if="isExerciseType(consts.ExerciseType.TRANSLATE_SENTENCE)"
             :exercise_data="lesson_data[current_exercise_id]"
             :translate="translate"
             :show_error_message="show_error_message"
@@ -50,7 +50,7 @@ import * as consts from '@/js/constants'
         />
 
         <choose-correct-translation
-            v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION"
+            v-else-if="isExerciseType(consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION)"
             :exercise_data="lesson_data[current_exercise_id]"
             :translate="translate"
             :show_error_message="show_error_message"
@@ -62,7 +62,7 @@ import * as consts from '@/js/constants'
         />
 
         <fill-sentence-gap
-            v-else-if="lesson_data[current_exercise_id]['exercise_type'] === consts.ExerciseType.FILL_GAP_IN_SENTENCE"
+            v-else-if="isExerciseType(consts.ExerciseType.FILL_GAP_IN_SENTENCE)"
             :exercise_data="lesson_data[current_exercise_id]"
             :translate="translate"
             :show_error_message="show_error_message"
@@ -80,8 +80,7 @@ import * as consts from '@/js/constants'
             variant="elevated"
             rounded="lg"
             size="large"
-            :block="true"
-            class="text-uppercase"
+            class="text-uppercase small-button"
         >{{ button.text }}
         </v-btn>
       </v-container>
@@ -148,7 +147,7 @@ const ButtonStateProperties = [
 const LessonState = {IN_PROGRESS: 0, COMPLETED: 1, FINISHED: 2}
 
 export default {
-  name: "LessonRunner",
+  name: 'LessonRunner',
   components: {
     TranslateSingleWordView,
     LessonComplete,
@@ -158,60 +157,14 @@ export default {
     ChooseCorrectTranslation,
     FillSentenceGap
   },
+  props: {
+    translate: Object,
+    lesson_data: Array,
+    practice_type: String
+  },
+  emits: ['isLessonFinished'],
   data() {
     return {
-      translate: {
-        from: 'en',
-        to: 'es'
-      },
-      // practice_type: consts.PracticeType.TRANSLATE_WORDS_WRITING,
-      // lesson_data: [
-      //   {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'hola', en: 'hello'},
-      //   {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'adios', en: 'by'}
-      // ],
-      // TODO: when request parsed, add icon & color tag to each element  user_knows_translation
-      // practice_type: consts.PracticeType.TRANSLATE_WORDS_ORAL,
-      // lesson_data: [{
-      //   exercise_type: "translate_words_oral",
-      //   word_translation: [
-      //     {
-      //       en: "hello",
-      //       es: "hola",
-      //       icon: consts.WordStatusMdiIcon.REMEMBERED,
-      //       color: consts.Color.GOOD,
-      //       user_knows_translation: true
-      //     },
-      //     {
-      //       en: "by",
-      //       es: "adios",
-      //       icon: consts.WordStatusMdiIcon.REMEMBERED,
-      //       color: consts.Color.GOOD,
-      //       user_knows_translation: true
-      //     }
-      //   ]
-      // }],
-      practice_type: consts.PracticeType.COMPLEX,
-      lesson_data: [
-        {
-          exercise_type: consts.ExerciseType.FILL_GAP_IN_SENTENCE, es: 'hola', en: 'hello',
-          sentence_with_gap: "___, como se llama?",
-          choices: ["hola", "adios", "chao", "hasta pronto"]
-        },
-        {
-          exercise_type: consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION, es: 'hola', en: 'hello',
-          choices: ["adios", "hola", "chao", "hasta pronto"]
-        },
-        {
-          exercise_type: consts.ExerciseType.CHOOSE_CORRECT_TRANSLATION, es: 'adios', en: 'by',
-          choices: ["hola", "adios", "chao", "hasta pronto"]
-        },
-        {exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD, es: 'hola', en: 'hello'},
-        {
-          exercise_type: consts.ExerciseType.TRANSLATE_SENTENCE, es: 'adios', en: 'by',
-          sentence_to_translate: 'Hello what is your name',
-          correct_translation: 'Hola como se llama'
-        }
-      ],
       incorrect_answers: [],
       current_exercise_id: 0,
       current_answer_info: {
@@ -256,8 +209,22 @@ export default {
           this.lesson_data.length
     }
   },
+  watch: {
+    lesson_state() {
+      if (this.is_lesson_finished) {
+        this.$emit('isLessonFinished', true)
+      }
+    }
+  },
   methods: {
     // Support functions
+    isLessonDataNotEmpty(){
+      return this.lesson_data.length !== 0
+    },
+    isExerciseType(expected) {
+      return this.isLessonDataNotEmpty() &&
+          this.lesson_data[this.current_exercise_id]['exercise_type'] === expected
+    },
     isLastExercise() {
       return this.current_exercise_id === this.lesson_data.length - 1
     },
@@ -274,7 +241,6 @@ export default {
     },
     // Event functions
     handleIfButtonEnabled(is_enabled) {
-      console.log('here', is_enabled)
       this.button.disabled = !is_enabled
     },
     handleExerciseAnswerWithMultiWords(answer_info) {
@@ -336,5 +302,9 @@ export default {
 
 .lesson-area {
   min-width: 425px;
+}
+
+.small-button {
+  min-width: 256px;
 }
 </style>

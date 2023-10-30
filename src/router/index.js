@@ -27,12 +27,6 @@ const router = createRouter({
       path: '/practice',
       name: 'practice',
       component: () => import('../views/PracticeView.vue')
-    },
-    // TODO: test, remove when everything is done\
-    {
-      path: '/test',
-      name: 'test',
-      component: () => import('../components/LessonRunner.vue')
     }
   ]
 })

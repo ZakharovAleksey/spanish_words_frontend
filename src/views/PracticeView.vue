@@ -1,165 +1,161 @@
 <template>
-
   <!-- MAIN PAGE CONTENT -->
-  <v-row :class="top_class">
+  <v-row>
 
     <!--    MAIN LESSON PARAMETERS    -->
-    <v-col class="grow d-flex flex-column flex-nowrap" xs="12" md="4">
+    <v-col xs="12" md="4">
       <v-row cols="12" align="end" justify="center">
         <v-list>
           <!--    GOOGLE SHEET    -->
           <v-list-item>
             <template v-slot:prepend>
               <v-tooltip text="Select the google sheet to retrieve words" location="bottom">
-                <template v-slot:activator="{ props }" >
-                    <v-icon icon="mdi-google-spreadsheet" size="x-large" v-bind="props" />
+                <template v-slot:activator="{ props }">
+                  <v-icon icon="mdi-google-spreadsheet" size="x-large" v-bind="props"/>
                 </template>
               </v-tooltip>
             </template>
-              <v-select
-                  label="Google sheet"
-                  v-model="selected_gsheet"
-                  :items="gsheets"
-                  :loading="gsheets_loading"
-                  :clearable="true"
-                  append-icon
-                  :disabled="is_parameters_select_disabled"
-                  :hide-details="true"
-                  variant="outlined"
-                  class="my-2" />
+            <v-select
+                label="Google sheet"
+                v-model="selected_gsheet"
+                :items="gsheets"
+                :loading="gsheets_loading"
+                :clearable="true"
+                :disabled="is_parameters_select_disabled"
+                :hide-details="true"
+                variant="outlined"
+                class="my-2"/>
           </v-list-item>
 
           <!--  CATEGORY  -->
           <v-list-item>
             <template v-slot:prepend>
               <v-tooltip text="Column with the words categories" location="bottom">
-                <template v-slot:activator="{ props }" >
-                    <v-icon icon="mdi-shape-outline" size="x-large" v-bind="props" />
+                <template v-slot:activator="{ props }">
+                  <v-icon icon="mdi-shape-outline" size="x-large" v-bind="props"/>
                 </template>
               </v-tooltip>
             </template>
-              <v-select
-                  label="Google sheet base column"
-                  v-model="selected_category"
-                  :items="categories"
-                  item-title="text"
-                  item-value="id"
-                  :loading="categories_loading"
-                  :clearable="true"
-                  append-icon
-                  :disabled="is_parameters_select_disabled"
-                  :hide-details="true"
-                  variant="outlined"
-                  class="my-2" />
+            <v-select
+                label="Google sheet base column"
+                v-model="selected_category"
+                :items="categories"
+                item-title="text"
+                item-value="id"
+                :loading="categories_loading"
+                :clearable="true"
+                :disabled="is_parameters_select_disabled"
+                :hide-details="true"
+                variant="outlined"
+                class="my-2"/>
           </v-list-item>
 
           <!--  SUB THEME  -->
           <v-list-item>
             <template v-slot:prepend>
               <v-tooltip text="Category for the words filtering" location="bottom">
-                <template v-slot:activator="{ props }" >
-                    <v-icon icon="mdi-shape-plus" size="x-large" v-bind="props" />
+                <template v-slot:activator="{ props }">
+                  <v-icon icon="mdi-shape-plus" size="x-large" v-bind="props"/>
                 </template>
               </v-tooltip>
             </template>
-              <v-autocomplete
-                  label="Words categories"
-                  v-model="selected_category_key"
-                  :items="category_keys"
-                  :loading="category_key_loading"
-                  :clearable="true"
-                  append-icon
-                  :disabled="is_parameters_select_disabled"
-                  multiple
-                  hide-details="true"
-                  variant="outlined"
-                  :menu-props="{ maxWidth : 5 }"
-                  class="my-2"
-              >
-                <!--  SELECT ALL EXTRA CHECKBOX  -->
-                <template v-slot:prepend-item v-if="category_keys.length !== 0">
-                  <v-list-item title="all categories" @click="selectAll">
-                    <template v-slot:prepend>
-                      <v-checkbox-btn :model-value="isAllCategoriesSelected"></v-checkbox-btn>
-                    </template>
-                  </v-list-item>
+            <v-autocomplete
+                label="Words categories"
+                v-model="selected_category_key"
+                :items="category_keys"
+                :loading="category_key_loading"
+                :clearable="true"
+                :disabled="is_parameters_select_disabled"
+                multiple
+                hide-details="true"
+                variant="outlined"
+                :menu-props="{ maxWidth : 5 }"
+                class="my-2"
+            >
+              <!--  SELECT ALL EXTRA CHECKBOX  -->
+              <template v-slot:prepend-item v-if="category_keys.length !== 0">
+                <v-list-item title="all categories" @click="selectAll">
+                  <template v-slot:prepend>
+                    <v-checkbox-btn :model-value="isAllCategoriesSelected"></v-checkbox-btn>
+                  </template>
+                </v-list-item>
 
-                  <v-list-item title="latest added words" @click="selectLatest">
-                    <template v-slot:prepend>
-                      <v-checkbox-btn :model-value="select_latest_words"></v-checkbox-btn>
-                    </template>
-                  </v-list-item>
-                  <v-divider class="my-1"></v-divider>
-                </template>
+                <v-list-item title="latest added words" @click="selectLatest">
+                  <template v-slot:prepend>
+                    <v-checkbox-btn :model-value="select_latest_words"></v-checkbox-btn>
+                  </template>
+                </v-list-item>
+                <v-divider class="my-1"></v-divider>
+              </template>
 
-                <!--  CROP THE NUMBER OF SELECTED UNITS IN CASE MANY SELECTED  -->
-                <template v-slot:selection="{ item, index }">
-                  <v-chip v-if="index < 2">
-                    <span>{{ item.title }}</span>
-                  </v-chip>
-                  <span v-if="index === 2" class="text-grey text-caption align-self-center">
+              <!--  CROP THE NUMBER OF SELECTED UNITS IN CASE MANY SELECTED  -->
+              <template v-slot:selection="{ item, index }">
+                <v-chip v-if="index < 2">
+                  <span>{{ item.title }}</span>
+                </v-chip>
+                <span v-if="index === 2" class="text-grey text-caption align-self-center">
                     (+{{ selected_category_key.length - 2 }} others)
                   </span>
-                </template>
+              </template>
 
-              </v-autocomplete>
+            </v-autocomplete>
           </v-list-item>
 
           <!--    LANGUAGE      -->
           <v-list-item>
             <template v-slot:prepend>
               <v-tooltip text="Original language to translate from" location="bottom">
-                <template v-slot:activator="{ props }" >
-                    <v-icon icon="mdi-translate" size="x-large" v-bind="props" />
+                <template v-slot:activator="{ props }">
+                  <v-icon icon="mdi-translate" size="x-large" v-bind="props"/>
                 </template>
               </v-tooltip>
             </template>
-              <v-select
-                  label="Original language"
-                  v-model="selected_language"
-                  :items="languages"
-                  append-icon
-                  :disabled="is_parameters_select_disabled"
-                  :hide-details="true"
-                  variant="outlined"
-                  class="my-2" />
+            <v-select
+                label="Original language"
+                v-model="selected_language"
+                :items="languages"
+                :disabled="is_parameters_select_disabled"
+                :hide-details="true"
+                variant="outlined"
+                class="my-2"/>
           </v-list-item>
 
           <!--  NUMBER OF WORDS TO REPEAT  -->
           <v-list-item>
             <template v-slot:prepend>
               <v-tooltip text="Number of words to repeat" location="bottom">
-                <template v-slot:activator="{ props }" >
-                    <v-icon icon="mdi-counter" size="x-large" v-bind="props" />
+                <template v-slot:activator="{ props }">
+                  <v-icon icon="mdi-counter" size="x-large" v-bind="props"/>
                 </template>
               </v-tooltip>
             </template>
-              <v-select
+            <v-select
                 label="Number of words to repeat"
                 v-model="selected_number"
                 :items="numbers"
                 :disabled="is_parameters_select_disabled"
                 variant="outlined"
                 :hide-details="true"
-                class="my-2" />
+                class="my-2"/>
           </v-list-item>
 
           <!--  TYPE OF SELF CHECK  -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Enable, if you prefer repeat words without typing their translation" location="bottom">
-                <template v-slot:activator="{ props }" >
-                    <v-icon icon="mdi-draw" size="x-large" v-bind="props" />
+              <v-tooltip text="Enable, if you prefer repeat words without typing their translation"
+                         location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-icon icon="mdi-draw" size="x-large" v-bind="props"/>
                 </template>
               </v-tooltip>
             </template>
-              <v-checkbox
-                  label="Don't check words translation"
-                  v-model="check_by_typing"
-                  :disabled="is_parameters_select_disabled"
-                  variant="outlined"
-                  :hide-details="true"
-                  class="my-2" />
+            <v-checkbox
+                label="Don't check words translation"
+                v-model="check_by_typing"
+                :disabled="is_parameters_select_disabled"
+                variant="outlined"
+                :hide-details="true"
+                class="my-2"/>
           </v-list-item>
         </v-list>
       </v-row>
@@ -175,205 +171,41 @@
       </v-row>
     </v-col>
 
-
-<!--    <v-divider :vertical="true"></v-divider>-->
-
-    <v-col class="grow d-flex flex-column flex-nowrap" xs="12" md="7" >
-      <!--    AREA WITH WORDS    -->
-      <v-row cols="12">
-
-        <!--   LESSON AREA       -->
-        <v-card v-if="!is_lesson_complete" elevation="0" width="100%">
-          <v-card-item>
-            <v-card-title>
-              Words to repeat
-            </v-card-title>
-            <v-alert
-                v-show="Object.keys(words).length !== 0 && check_by_typing"
-                border-color="blue"
-                title="Note"
-                text="Click on the words, translations of which you do not remember."
-                border="start"
-                class="text-subtitle-2 mt-6"
-                closable
-                close-icon="mdi-close-circle-outline"
-                icon="mdi-cursor-default-click-outline"
-            />
-          </v-card-item>
-        </v-card>
-        <v-card v-if="!is_lesson_complete && check_by_typing" elevation="0" width="100%">
-          <v-card-text>
-            <v-col cols="12">
-              <v-row cols="12" justify="center">
-                <v-progress-circular v-if="words_loading" class="align-center justify-center" indeterminate />
-                <v-chip
-                    v-else
-                    v-for="item in words[selected_language]"
-                    :prepend-icon="item.icon"
-                    class="ma-1"
-                    :color="item.color"
-                    size="large"
-                    @click="updateWordStatus(item)"
-                    >{{item.word}}</v-chip>
-              </v-row>
-            </v-col>
-          </v-card-text>
-        </v-card>
-        <v-card v-if="!is_lesson_complete && !check_by_typing" elevation="0" width="100%">
-          <v-card-text>
-            <v-container>
-              <v-row cols="12" v-if="words_loading" justify="center">
-                <v-progress-circular class="align-center justify-center" indeterminate />
-              </v-row>
-              <div v-if="!words_loading && Object.keys(words).length !== 0">
-                <v-row cols="12" align-content="center" >
-                  <p class="my-2 text-h6">Your progress: {{ Math.round(current_word_id / words_queue.length * 100) }} %</p>
-                  <v-progress-linear
-                      v-model="current_word_id"
-                      :max="words_queue.length"
-                      :height="12"
-                      rounded class="pa-0 mb-10"
-                      color="green"></v-progress-linear>
-                </v-row>
-                <v-row cols="12" justify="center" align="center">
-                  <v-card rounded="lg" class="pa-5" width="400">
-                    <v-text-field
-                        label="Original"
-                        variant="outlined"
-                        v-model="current_word_to_check"
-                        :readonly="true"
-                    ></v-text-field>
-                    <v-form validate-on="submit lazy" @submit.prevent="checkTranslation">
-                      <v-text-field
-                          v-model="current_user_input"
-                          :persistent-hint="true"
-                          label="Translation"
-                          variant="outlined"
-                          @keyup.enter="checkTranslation"
-                          :readonly="post_validation_lock"
-                          :error="!is_user_input_correct"
-                          :error-messages="current_error_message"
-                          :messages="current_message"
-                      ></v-text-field>
-                    </v-form>
-                    <v-card-actions class="align-center justify-center">
-                      <v-btn
-                          rounded="lg"
-                          size="large"
-                          class="text-uppercase mt-1 my-button"
-                          text="NEXT"
-                          @click="getNextWord"
-                          variant="elevated"
-                      />
-                    </v-card-actions>
-                  </v-card>
-                </v-row>
-              </div>
-            </v-container>
-          </v-card-text>
-        </v-card>
-
-        <!--   AREA WITH FORGOTTEN WORDS       -->
-        <v-card v-if="is_lesson_complete && forgotten_words.length !== 0" elevation="0" class="w-100">
-
-          <v-card-item>
-            <v-card-title>
-              Forgotten words
-            </v-card-title>
-
-            <v-card-subtitle>
-              Here are words for you to repeat to get all five stars next time!
-            </v-card-subtitle>
-          </v-card-item>
-        </v-card>
-        <v-card v-if="is_lesson_complete && forgotten_words.length !== 0" elevation="0" class="w-100" max-height="400px">
-          <v-card-text>
-            <v-table :fixed-header="true" height="300px">
-              <thead>
-                <tr>
-                  <th class="text-center">
-                    Original
-                  </th>
-                  <th class="text-center">
-                    Translation
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in forgotten_words">
-                  <td class="text-center">{{ item }}</td>
-                  <td class="text-center">{{ word_to_translation_pairs.get(item) }}</td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-card-text>
-        </v-card>
+    <v-col xs="12">
+      <v-row v-if="words_loading" class="justify-center fill-height">
+        <v-progress-circular
+            indeterminate
+            color="success"
+            :size="60"
+            :width="12"
+            class="fill-height"
+        />
       </v-row>
-
-      <!--    COMPLETE BUTTON    -->
-      <v-row cols="12" align="end" justify="center">
-        <v-btn
-            v-if="!is_lesson_complete && Object.keys(words).length !== 0"
-            rounded="lg"
-            size="large"
-            class="text-uppercase my-1 my-button"
-            @click="onCompleteClick"
-        >complete</v-btn>
-      </v-row>
+      <lesson-runner
+          v-else
+          :lesson_data="lesson_data"
+          :translate="translate"
+          :practice_type="practice_type"
+          @is-lesson-finished="handleFinishLesson"
+      />
     </v-col>
+
   </v-row>
-
-  <!-- ON LESSON COMPLETE CONTENT -->
-  <v-overlay v-model="overlay" :contained="true" class="align-center justify-center">
-    <v-card rounded="lg" width="360">
-
-      <v-card-item>
-        <v-card-title>
-          <div class="d-flex justify-center mt-auto text-h5">Lesson complete!</div>
-        </v-card-title>
-      </v-card-item>
-
-      <v-card-text>
-        <div class="d-flex flex-column align-center">
-          <v-icon :icon="lesson_icon" style="font-size: 250px;" :color="lesson_color"></v-icon>
-          <div class="text-h2 mt-5">
-            {{success_percent}}
-            <span class="text-h6 ml-n3">/5</span>
-          </div>
-          <v-rating
-            v-model="success_percent"
-            color="yellow-darken-3"
-            :half-increments="true"
-            :readonly="true"
-        ></v-rating>
-          <p class="px-3 text-subtitle-1 text-center">
-            Great job! <br/> {{generateUserMessageOnLessonComplete()}}
-          </p>
-        </div>
-      </v-card-text>
-
-      <v-card-actions class="align-center justify-center">
-        <v-btn
-            @click="onLessonComplete"
-            class="text-uppercase my-1 my-button"
-            rounded="lg"
-            size="large"
-            variant="elevated"
-        >done</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-overlay>
 
 </template>
 
 <script>
-import axios from 'axios'
-import { useToast } from 'vue-toastification'
+import LessonRunner from '@/components/LessonRunner.vue'
+import {useToast} from 'vue-toastification'
 
+import axios from 'axios'
 import * as consts from '@/js/constants'
-import {kLatestWordsTag} from "@/js/constants";
 
 export default {
+  name: 'PracticeView',
+  components: {
+    LessonRunner
+  },
   data() {
     return {
       is_parameters_select_disabled: false,
@@ -396,59 +228,29 @@ export default {
       // Checkbox for lesson type
       check_by_typing: false,
       // Language
-      languages: [ consts.Column.ENGLISH, consts.Column.SPANISH ],
+      languages: [consts.Column.ENGLISH, consts.Column.SPANISH],
       selected_language: consts.Column.ENGLISH,
       // Words to repeat during the lesson
-      words: {},
-      forgotten_words: [],
+
       words_loading: false,
-      word_to_translation_pairs: new Map(),
-
-      // Fields required for the lesson type: type the words
-      // TODO: make words queue: Queue type
-      words_queue: [],
-      current_word_id: 0,
-      current_word_to_check: null,
-      current_user_input: null,
-      // Lock the possibility to change user input after submit
-      post_validation_lock: false,
-      is_user_input_correct: true,
-      // Error message, used to show incorrect user input
-      current_error_message: '',
-      // Success message, used to show correct user input
-      current_message: '',
-
-      // Post-complete lesson
-      // Percent of correct responses in range [0, 1]
-      success_percent: 0,
-      overlay: false,
       is_lesson_complete: false,
-      lesson_icon: null,
-      lesson_color: null,
 
-      // TODO: re-make. Now this handles the size of window on xm screen
-      window: {
-            width: 0,
-            height: 0
+      //!
+      translate: {
+        from: 'en',
+        to: 'es'
       },
-      top_class: ''
+      // TODO: remove
+      practice_type: consts.PracticeType.TRANSLATE_WORDS_WRITING,
+      lesson_data: []
     }
   },
-  created() {
-    window.addEventListener('resize', this.handleResize)
-    this.handleResize()
-  },
   async mounted() {
-    // Upload the list of all possible spreadsheets
-    axios
-        .get(`${consts.kBaseUrl}/api/spreadsheet/titles/`)
-        .then(response => (this.gsheets = response.data))
-        .catch(error => (this.showErrorToast(error)))
-        .finally(() => (this.gsheets_loading = false))
+    await this.getSpreadsheets()
   },
   // Object, required to minitor the state of the elements on the page
   watch: {
-    selected_gsheet : function () {
+    selected_gsheet: function () {
       // Drop all child inputs
       this.selected_category = null
       this.selected_category_key = null
@@ -469,17 +271,27 @@ export default {
 
       if (this.select_latest_words && this.selected_category_key.length > 1) {
         const index = this.selected_category_key.indexOf(consts.kLatestWordsTag)
-        if (index != -1) {
+        if (index !== -1) {
           this.selected_category_key.splice(index, 1)
         }
         this.select_latest_words = false
       }
     },
-    window: {
-      handler() {
-        this.top_class = this.window.width < 600 ? 'flex-column' : ''
-      },
-      deep: true
+    selected_language: function () {
+      if (this.selected_language === consts.Column.ENGLISH) {
+        this.translate.from = 'en'
+        this.translate.to = 'es'
+      } else {
+        this.translate.from = 'es'
+        this.translate.to = 'en'
+      }
+    },
+    check_by_typing: function () {
+      // TODO: remove this when backend part is ready
+      // This is a temporary solution till backend did not provide the type od each exercise
+      this.practice_type = !this.check_by_typing ?
+          consts.PracticeType.TRANSLATE_WORDS_WRITING :
+          consts.PracticeType.TRANSLATE_WORDS_ORAL
     }
   },
   computed: {
@@ -490,6 +302,14 @@ export default {
     }
   },
   methods: {
+    // Data getters
+    async getSpreadsheets() {
+      axios
+          .get(`${consts.kBaseUrl}/api/spreadsheet/titles/`)
+          .then(response => (this.gsheets = response.data))
+          .catch(error => (this.showErrorToast(error)))
+          .finally(() => (this.gsheets_loading = false))
+    },
     async getThemes() {
       if (this.gsheets.length === 0)
         return
@@ -513,7 +333,9 @@ export default {
 
       // Get IDs of all themes
       let ids = []
-      Object.entries(this.categories).forEach(([_, value]) => { ids.push(value.id)})
+      Object.entries(this.categories).forEach(([_, value]) => {
+        ids.push(value.id)
+      })
 
       if (ids.includes(this.selected_category)) {
         this.category_key_loading = true
@@ -530,11 +352,10 @@ export default {
       }
     },
     async getWords() {
-      if(!this.isPreRequestRequirementsSatisfied(true, true, true))
+      if (!this.isPreRequestRequirementsSatisfied(true, true, true))
         return
 
       // Prepare for the new lesson
-      this.cleanUpLessonData()
       this.is_parameters_select_disabled = true
 
       this.words_loading = true
@@ -550,75 +371,47 @@ export default {
             }
           })
           .then(response => {
-            // Parse words to make chips from them
-            // TODO: on the backend side put everything to the dict {word, translation, color, icon}
-            for(const [key, value] of Object.entries(response.data)) {
-              const column = parseInt(key) === 0 ? consts.Column.SPANISH : consts.Column.ENGLISH
-              this.words[column] = value.map((v) => ({ word: v, color: consts.Color.GOOD, icon: 'mdi-emoticon' }))
-            }
-
-            // Create map for translation: <word> - <translation>
-            const key_column = this.selected_language === consts.Column.SPANISH ? 0 : 1
-            const value_column = key_column === 1 ? 0 : 1
-            const length = response.data[key_column].length
-            for(let i = 0; i < length; ++i) {
-              this.word_to_translation_pairs.set(response.data[key_column][i], response.data[value_column][i])
-            }
-
-            if (!this.check_by_typing) {
-              this.words_queue = [...response.data[key_column]]
-              this.forgotten_words = [...response.data[key_column]]
-              this.current_word_to_check = this.words_queue[this.current_word_id]
-            }
+            this.formLessonData(response.data)
           })
           .catch(error => (this.showErrorToast(error)))
           .finally(() => (this.words_loading = false))
     },
-    // Forgotten words
-    updateWordStatus(item) {
-      const word = item.word
-
-      const index = this.forgotten_words.indexOf(word)
-      if (index !== -1) {
-        this.forgotten_words.splice(index, 1)
-      } else {
-        this.forgotten_words.push(word)
-      }
-
-      item.color = item.color === consts.Color.GOOD ? consts.Color.BAD : consts.Color.GOOD
-      item.icon = item.icon === consts.WordStatusMdiIcon.REMEMBERED ?
-          consts.WordStatusMdiIcon.FORGOTTEN :
-          consts.WordStatusMdiIcon.REMEMBERED
-    },
-    // Results
-    onCompleteClick(){
-      // Calculate percent of correct answers
-      const numerator = this.word_to_translation_pairs.size - this.forgotten_words.length
-      const denominator = this.word_to_translation_pairs.size
-      this.success_percent = (numerator / denominator).toFixed(1) * consts.kMaxRating
-
-      // Generate visual lesson results
-      const percent = this.success_percent / consts.kMaxRating * 100
-      const data = this.chooseLessonIcons(percent)
-      this.lesson_icon = data.icon
-      this.lesson_color = data.color
-
-      this.overlay=true
-    },
-    onLessonComplete() {
-      this.overlay = !this.overlay
-      this.is_lesson_complete = true
+    // Emit handlers
+    handleFinishLesson() {
       this.is_parameters_select_disabled = false
     },
-    generateUserMessageOnLessonComplete(){
-      const percent = Math.max(this.success_percent / consts.kMaxRating * 100., 0)
-      const intro = `You remember ${percent}% of the words.`
-      if (percent > consts.MinSuccessThresholds.GOOD) {
-        return intro + consts.LessonResultMessages.GOOD
-      } else if (percent > consts.MinSuccessThresholds.MEDIUM) {
-        return intro + consts.LessonResultMessages.MEDIUM
+    // Helper functions
+    formLessonData(response) {
+      // TODO: here adjust the current response behaviour
+      if (this.practice_type === consts.PracticeType.TRANSLATE_WORDS_WRITING) {
+        const length = response[0].length
+        for (let i = 0; i < length; ++i) {
+          this.lesson_data.push({
+            es: response[0][i].trim(),
+            en: response[1][i].trim(),
+            exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD
+          })
+        }
+      } else {
+        const length = response[0].length
+        let content = {
+          word_translation: [],
+          exercise_type: consts.ExerciseType.TRANSLATE_WORDS_ORAL
+        }
+
+        for (let i = 0; i < length; ++i) {
+          content.word_translation.push({
+            es: response[0][i].trim(),
+            en: response[1][i].trim(),
+            // Extra tags required for the lesson
+            icon: consts.WordStatusMdiIcon.REMEMBERED,
+            color: consts.Color.GOOD,
+            user_knows_translation: true
+          })
+        }
+
+        this.lesson_data = [content]
       }
-      return intro + consts.LessonResultMessages.BAD
     },
     isPreRequestRequirementsSatisfied(need_topic = false, need_theme = false, need_sub_theme = false) {
       if (need_topic && this.selected_gsheet === null) {
@@ -636,111 +429,31 @@ export default {
 
       return true
     },
-    cleanUpLessonData(){
-      // Clean-up for the first type of the lesson: without typing
-      this.words = {}
-      this.forgotten_words = []
-      this.word_to_translation_pairs.clear()
-      this.is_lesson_complete = false
-
-      // Clean up for the second type of the lesson: with typing
-      this.words_queue = []
-      this.current_word_id = 0
-      this.current_word_to_check = null
-      this.current_user_input = null
-      this.post_validation_lock = false
-      this.is_user_input_correct = true
-      this.current_error_message = ''
-      this.current_message = ''
-    },
-    chooseLessonIcons(success){
-      if(success > consts.MinSuccessThresholds.GOOD) {
-        return { icon: consts.LessonResultMdiIcon.GOOD, color: consts.Color.GOOD}
-      }
-      if (success > consts.MinSuccessThresholds.MEDIUM) {
-        return { icon: consts.LessonResultMdiIcon.MEDIUM, color: consts.Color.MEDIUM}
-      }
-      return { icon: consts.LessonResultMdiIcon.BAD, color: consts.Color.BAD}
-    },
-    transformWord(str){
-      // Make user intput lowercase and remove accents
-      return str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    },
-    checkTranslation() {
-      // TODO: On the second 'enter' input we go to the next word
-      const expected = this.word_to_translation_pairs.get(this.current_word_to_check)
-      this.is_user_input_correct = this.transformWord(this.current_user_input) === this.transformWord(expected)
-
-      if (this.is_user_input_correct) {
-        const index = this.forgotten_words.indexOf(this.current_word_to_check)
-        if (index !== -1) {
-          this.forgotten_words.splice(index, 1)
-        }
-      }
-
-      this.post_validation_lock = true
-      if (!this.is_user_input_correct) {
-        this.current_error_message = `Sorry, expected translation: ${expected}`
-      } else {
-        this.current_message = 'Great job!'
-      }
-    },
-    getNextWord() {
-      // If there was no translation check: do it first
-      if (!this.post_validation_lock) {
-        this.checkTranslation()
-        return
-      }
-
-      // Check if this was the last word and the game is complete
-      if (this.current_word_id === this.words_queue.length - 1) {
-        this.onCompleteClick()
-        return
-      }
-
-      // Go to the next word
-      this.current_word_id++
-      this.current_word_to_check = this.words_queue[this.current_word_id]
-
-      this.current_user_input = ''
-      this.is_user_input_correct = ''
-      this.current_error_message = ''
-      this.current_message = ''
-
-      this.is_user_input_correct = true
-      this.post_validation_lock = false
-    },
     showErrorToast(error) {
       console.log(error)
 
       if (error.response.status === 401) {
         useToast().info(consts.kLoggedOutMessage)
-        setTimeout(() => { this.$router.push('/login') }, consts.kRedirectToLoginPageTime)
-      }
-      else {
+        setTimeout(() => {
+          this.$router.push('/login')
+        }, consts.kRedirectToLoginPageTime)
+      } else {
         useToast().error(consts.kServerNotRespondError)
       }
     },
-    destroyed() {
-      window.removeEventListener('resize', this.handleResize)
-    },
-    handleResize() {
-      this.window.width = window.innerWidth
-      this.window.height = window.innerHeight
-    },
-    selectAll(){
+    selectAll() {
       if (this.selected_category_key == null || this.selected_category_key.length !== this.category_keys.length) {
         this.selected_category_key = [...this.category_keys]
       } else {
         this.selected_category_key = []
       }
     },
-    selectLatest(){
+    selectLatest() {
       if (!this.select_latest_words) {
-        this.selected_category_key = [ consts.kLatestWordsTag ]
+        this.selected_category_key = [consts.kLatestWordsTag]
       } else {
         const index = this.selected_category_key.indexOf(consts.kLatestWordsTag)
-        if (index != -1) {
+        if (index !== -1) {
           this.selected_category_key.splice(index, 1)
         }
       }
