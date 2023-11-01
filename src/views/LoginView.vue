@@ -1,67 +1,67 @@
 <template>
-  <v-container>
-    <v-row align="center" justify="center">
-      <v-card width="400" variant="outlined">
-        <template v-slot:prepend>
-          <v-icon icon="mdi-account-circle" size="x-large"></v-icon>
-        </template>
+  <v-container align="center" justify="center">
+    <v-card width="400" variant="flat">
+      <template v-slot:title>
+        <p class="text-center text-h3 pb-2">Sign in</p>
+      </template>
 
-        <template v-slot:title class="text-md-center">
-          User login
-        </template>
-        <v-sheet>
-          <v-form validate-on="submit lazy" @submit.prevent="submit" :model-value="isValid">
-            <v-card-text>
-              <v-text-field
-                  label="Username"
-                  v-model="user"
-                  variant="outlined"
-                  class="ma-2"/>
-              <v-text-field
-                  label="Password"
-                  v-model="password"
-                  type="password"
-                  variant="outlined"
-                  class="ma-2"/>
-              <v-alert
-                  v-show="isValid === false"
-                  border-color="red"
-                  text="Incorrect username or password"
-                  border="start"
-                  class="text-subtitle-1"
-              />
-          </v-card-text>
+      <v-form validate-on="submit lazy" @submit.prevent="submit" :model-value="isValid">
+        <v-card-text>
+          <v-text-field
+              prepend-inner-icon="mdi-account"
+              label="Username"
+              v-model="user"
+              variant="outlined"
+              class="mb-4"
+              :hide-details="true"
+          />
+          <v-text-field
+              prepend-inner-icon="mdi-form-textbox-password"
+              label="Password"
+              v-model="password"
+              type="password"
+              variant="outlined"
+              class="mb-4"
+              :hide-details="true"
+          />
+          <router-link to="/login" class="text-center text-subtitle-1">
+            Forgot your password?
+          </router-link>
 
-          <v-card-actions class="align-center justify-center">
-            <v-btn
-                :loading="loading"
-                text="submit"
-                rounded="lg"
-                size="large"
-                class="text-uppercase"
-                type="submit"
-                variant="elevated"
-            />
-          </v-card-actions>
-          </v-form>
-        </v-sheet>
-      </v-card>
-    </v-row>
+        </v-card-text>
+
+        <v-card-actions class="align-center justify-center">
+
+          <v-btn
+              :loading="loading"
+              text="submit"
+              rounded="lg"
+              size="large"
+              class="text-uppercase"
+              type="submit"
+              color="success"
+              variant="elevated"
+              :disabled="!is_submit_button_active"
+          />
+        </v-card-actions>
+      </v-form>
+    </v-card>
   </v-container>
 </template>
 
 <script>
-import { useUserStore } from '@/stores/UserStore'
+import {useUserStore} from '@/stores/UserStore'
 import axios from "axios";
-import { kBaseUrl } from '@/js/constants'
+import {kBaseUrl} from '@/js/constants'
+import {useToast} from "vue-toastification";
 
 export default {
   setup() {
     const store = useUserStore()
 
-    return { store }
+    return {store}
   },
-  data () {
+  data() {
     return {
       user: '',
       password: '',
@@ -70,11 +70,20 @@ export default {
       isValid: null
     }
   },
+  computed: {
+    is_submit_button_active() {
+      return this.user !== '' && this.password !== ''
+    }
+  },
   methods: {
+    showErrorToast(error) {
+      console.log('incorrect credentials', error)
+      useToast().error('Incorrect credentials')
+    },
     async submit() {
       await this.checkCredentials();
     },
-    async checkCredentials(){
+    async checkCredentials() {
       // Clear the storage before setting up a new tokens
       localStorage.clear()
       this.loading = true
@@ -101,20 +110,27 @@ export default {
             this.$router.push('/practice')
           })
           .catch(error => {
-            console.log('incorrect credentials', error)
-
             // Update authorization header
             axios.defaults.headers.common['Authorization'] = ''
             this.isValid = false
+
+            this.showErrorToast(error)
           })
           .finally(() => (this.loading = false))
     }
-  }
+  },
 }
 </script>
 
 <style scoped>
 :deep .v-btn {
   min-width: 256px;
+}
+
+.no-hover:hover {
+  background-color: transparent !important; /* Make the background transparent on hover */
+  color: inherit !important; /* Use the inherit color on hover */
+  text-decoration: none !important; /* Remove text decoration on hover, if any */
+  /* Add any other custom styles to achieve the desired appearance on hover */
 }
 </style>
