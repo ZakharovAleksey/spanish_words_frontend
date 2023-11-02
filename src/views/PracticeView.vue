@@ -1,17 +1,19 @@
 <template>
   <!-- MAIN PAGE CONTENT -->
-  <v-row>
+  <v-row class="align-center">
+    <v-col cols="3">
 
-    <!--    MAIN LESSON PARAMETERS    -->
-    <v-col xs="12" md="4">
-      <v-row cols="12" align="end" justify="center">
+      <div class="parameters-column text-center">
+        <!--    MAIN LESSON PARAMETERS    -->
         <v-list>
           <!--    GOOGLE SHEET    -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Select the google sheet to retrieve words" location="bottom">
+              <v-tooltip text="Google sheet to retrieve words" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon icon="mdi-google-spreadsheet" size="x-large" v-bind="props"/>
+                  <v-icon icon="mdi-google-spreadsheet" size="x-large" v-bind="props"
+                          :color="selected_gsheet ? 'success': 'grey-darken-3'"
+                  />
                 </template>
               </v-tooltip>
             </template>
@@ -24,7 +26,7 @@
                 :disabled="is_parameters_select_disabled"
                 :hide-details="true"
                 variant="outlined"
-                class="my-2"/>
+                class="my-2 my-button"/>
           </v-list-item>
 
           <!--  CATEGORY  -->
@@ -32,7 +34,9 @@
             <template v-slot:prepend>
               <v-tooltip text="Column with the words categories" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon icon="mdi-shape-outline" size="x-large" v-bind="props"/>
+                  <v-icon icon="mdi-shape-outline" size="x-large" v-bind="props"
+                          :color="selected_category ? 'success': 'grey-darken-3'"
+                  />
                 </template>
               </v-tooltip>
             </template>
@@ -53,9 +57,11 @@
           <!--  SUB THEME  -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Category for the words filtering" location="bottom">
+              <v-tooltip text="Categories of words to repeat" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon icon="mdi-shape-plus" size="x-large" v-bind="props"/>
+                  <v-icon icon="mdi-shape-plus" size="x-large" v-bind="props"
+                          :color="!isCategoriesEmpty() ? 'success': 'grey-darken-3'"
+                  />
                 </template>
               </v-tooltip>
             </template>
@@ -106,7 +112,7 @@
             <template v-slot:prepend>
               <v-tooltip text="Original language to translate from" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon icon="mdi-translate" size="x-large" v-bind="props"/>
+                  <v-icon icon="mdi-translate" size="x-large" v-bind="props" color="success"/>
                 </template>
               </v-tooltip>
             </template>
@@ -125,7 +131,7 @@
             <template v-slot:prepend>
               <v-tooltip text="Number of words to repeat" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon icon="mdi-counter" size="x-large" v-bind="props"/>
+                  <v-icon icon="mdi-counter" size="x-large" v-bind="props" color="success"/>
                 </template>
               </v-tooltip>
             </template>
@@ -142,10 +148,10 @@
           <!--  TYPE OF SELF CHECK  -->
           <v-list-item>
             <template v-slot:prepend>
-              <v-tooltip text="Choose the practise type"
+              <v-tooltip text="Practise type. Each has different exercises"
                          location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-icon icon="mdi-animation" size="x-large" v-bind="props"/>
+                  <v-icon icon="mdi-animation" size="x-large" v-bind="props" color="success"/>
                 </template>
               </v-tooltip>
             </template>
@@ -161,28 +167,27 @@
                 class="my-2"/>
           </v-list-item>
         </v-list>
-      </v-row>
 
-      <!--    START LESSON BUTTON    -->
-      <v-row cols="12" align="end" justify="center">
+        <!--    START LESSON BUTTON    -->
         <v-btn
             rounded="lg"
             size="large"
-            class="text-uppercase my-1 my-button"
-            text="start"
+            class="text-uppercase mt-3 my-button"
+            text="start lesson"
+            color="success"
+            :disabled="is_parameters_select_disabled"
             @click="getWords"/>
-      </v-row>
+      </div>
     </v-col>
 
-    <v-col xs="12">
+    <v-col cols="9">
       <v-row v-if="words_loading" class="justify-center fill-height">
         <v-progress-circular
-            indeterminate
-            color="success"
-            :size="60"
-            :width="12"
-            class="fill-height"
-        />
+          indeterminate
+          color="success"
+          :size="60"
+          :width="12"
+      />
       </v-row>
       <lesson-runner
           v-else
@@ -375,8 +380,12 @@ export default {
       this.is_parameters_select_disabled = false
     },
     // Helper functions
+    isCategoriesEmpty() {
+      return this.selected_category_key ? this.selected_category_key.length === 0 : true
+    },
     formLessonData(response) {
       // TODO: here adjust the current response behaviour
+      this.lesson_data = []
       if (this.practice_type === consts.PracticeType.TRANSLATE_WORDS_WRITING) {
         const length = response[0].length
         for (let i = 0; i < length; ++i) {
@@ -458,7 +467,13 @@ export default {
 </script>
 
 <style scoped>
+
 .my-button {
-  min-width: 312px;
+  min-width: 256px;
 }
+
+.parameters-column {
+  min-width: 360px;
+}
+
 </style>

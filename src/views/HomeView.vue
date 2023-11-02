@@ -11,7 +11,7 @@
 
     <v-col sm="12" md="4" lg="4">
       <v-row justify="center">
-        <h1 class="text-center mb-12">On this site you can repeat spanish words</h1>
+        <h1 class="text-center mb-12">Embark on Your Spanish Journey</h1>
       </v-row>
 
       <v-row align="center" justify="center">
@@ -19,8 +19,10 @@
             rounded="lg"
             size="large"
             class="text-uppercase"
+            color="success"
             to="/practice"
-        >start the practice</v-btn>
+        >start practice
+        </v-btn>
       </v-row>
     </v-col>
   </v-row>

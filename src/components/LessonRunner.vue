@@ -3,8 +3,8 @@ import * as consts from '@/js/constants'
 </script>
 
 <template>
-  <v-container v-if="isLessonDataNotEmpty()" class="d-flex justify-center fill-height">
-    <v-card v-if="is_lesson_in_progress" min-width="360" class="pa-2" variant="flat">
+  <v-container v-if="isLessonDataNotEmpty()" class="d-flex justify-center fill-height pt-0">
+    <v-card v-if="is_lesson_in_progress" min-width="360" class="pa-0" variant="flat">
       <v-container class="text-center lesson-area">
 
         <v-progress-linear
@@ -13,7 +13,7 @@ import * as consts from '@/js/constants'
             :height="13"
             rounded
             color="green"
-            class="my-3"
+            class="my-3 mt-2"
         />
 
         <translate-single-word-view
@@ -82,8 +82,9 @@ import * as consts from '@/js/constants'
             variant="elevated"
             rounded="lg"
             size="large"
-            class="text-uppercase small-button"
-        >{{ button.text }}
+            class="text-uppercase small-button mt-6"
+        >
+          {{ button.text }}
         </v-btn>
       </v-container>
     </v-card>
@@ -220,7 +221,7 @@ export default {
   },
   methods: {
     // Support functions
-    isLessonDataNotEmpty(){
+    isLessonDataNotEmpty() {
       return this.lesson_data.length !== 0
     },
     isExerciseType(expected) {
@@ -304,6 +305,8 @@ export default {
 
 .lesson-area {
   min-width: 425px;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .small-button {

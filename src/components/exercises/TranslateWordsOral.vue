@@ -1,15 +1,18 @@
 <template>
-  <div class="my-4">
-    <p class="text-left title mb-2"><b>Click on the words, with unknown translations:</b></p>
-    <v-chip
-        v-for="item in exercise_data['word_translation']"
-        :prepend-icon="item.icon"
-        class="ma-1"
-        :color="item.color"
-        size="large"
-        @click="updateWordStatus(item)"
-    >{{ item[translate.from] }}
-    </v-chip>
+  <div>
+    <p class="text-left title pb-2"><b>Click on the words, with unknown translations:</b></p>
+    <div style="max-width: 1000px">
+      <v-chip
+          v-for="item in exercise_data['word_translation']"
+          :prepend-icon="item.icon"
+          class="mx-1 my-1"
+          :color="item.color"
+          size="large"
+          @click="updateWordStatus(item)"
+      >
+        {{ item[translate.from] }}
+      </v-chip>
+    </div>
   </div>
 </template>
 

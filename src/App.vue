@@ -1,6 +1,6 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import iconImage from '@/assets/spain-logo.svg'
+import iconImage from '@/assets/translation.png'
 </script>
 
 <template>
@@ -12,7 +12,7 @@ import iconImage from '@/assets/spain-logo.svg'
         <v-img :src="iconImage" max-width="36"/>
       </v-btn>
       <v-toolbar-title>
-        Spanish Words Practice
+        <p class="text-h5">Catch Up Español</p>
       </v-toolbar-title>
     </v-toolbar>
 
