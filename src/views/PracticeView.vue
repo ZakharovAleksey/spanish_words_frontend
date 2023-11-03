@@ -1,8 +1,8 @@
 <template>
   <!-- MAIN PAGE CONTENT -->
-  <v-row class="align-center">
-    <v-col cols="3">
+  <v-row>
 
+    <v-col cols="12" xs="12" sm="12" md="3">
       <div class="parameters-column text-center">
         <!--    MAIN LESSON PARAMETERS    -->
         <v-list>
@@ -72,7 +72,7 @@
                 :loading="category_key_loading"
                 :clearable="true"
                 :disabled="is_parameters_select_disabled"
-                multiple
+                multiple="true"
                 hide-details="true"
                 variant="outlined"
                 :menu-props="{ maxWidth : 5 }"
@@ -180,8 +180,8 @@
       </div>
     </v-col>
 
-    <v-col cols="9">
-      <v-row v-if="words_loading" class="justify-center fill-height">
+    <v-col cols="12" xs="12" sm="12" md="9">
+      <v-row v-if="words_loading" class="justify-center fill-height align-center">
         <v-progress-circular
           indeterminate
           color="success"
@@ -474,6 +474,7 @@ export default {
 
 .parameters-column {
   min-width: 360px;
+  max-width: 400px;
 }
 
 </style>

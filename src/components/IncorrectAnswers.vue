@@ -8,10 +8,10 @@
         <v-table :fixed-header="true" height="440px" :hover="true" fixed-header>
           <thead>
           <tr>
-            <th class="text-center text-subtitle-1 table-column">
+            <th class="text-center text-subtitle-1">
               <b>Español</b>
             </th>
-            <th class="text-center text-subtitle-1 table-column">
+            <th class="text-center text-subtitle-1">
               <b>English</b>
             </th>
           </tr>
@@ -32,8 +32,8 @@
       </v-card-title>
       <img src="@/assets/gifs/rocket.gif" alt="Your GIF Alt Text"/>
     </v-card>
-
   </div>
+
 </template>
 
 <script>
@@ -51,10 +51,6 @@ export default {
 img {
   width: 300px;
   height: auto;
-}
-
-.table-column {
-  min-width: 256px;
 }
 
 </style>
