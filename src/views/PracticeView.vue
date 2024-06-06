@@ -366,7 +366,8 @@ export default {
               filter_column_id: this.selected_category,
               template: this.selected_category_key.join('|'),
               column_ids: '0,1',
-              count: this.selected_number
+              count: this.selected_number,
+              practice_type: this.practice_type
             }
           })
           .then(response => {
