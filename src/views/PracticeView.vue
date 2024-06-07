@@ -183,11 +183,11 @@
     <v-col cols="12" xs="12" sm="12" md="9">
       <v-row v-if="words_loading" class="justify-center fill-height align-center">
         <v-progress-circular
-          indeterminate
-          color="success"
-          :size="60"
-          :width="12"
-      />
+            indeterminate
+            color="success"
+            :size="60"
+            :width="12"
+        />
       </v-row>
       <lesson-runner
           v-else
@@ -385,36 +385,20 @@ export default {
       return this.selected_category_key ? this.selected_category_key.length === 0 : true
     },
     formLessonData(response) {
-      // TODO: here adjust the current response behaviour
+      // TODO: when complex GPT-related part will be ready add here the third `if`
       this.lesson_data = []
+
       if (this.practice_type === consts.PracticeType.TRANSLATE_WORDS_WRITING) {
-        const length = response[0].length
-        for (let i = 0; i < length; ++i) {
-          this.lesson_data.push({
-            es: response[0][i].trim(),
-            en: response[1][i].trim(),
-            exercise_type: consts.ExerciseType.TRANSLATE_SINGLE_WORD
-          })
-        }
+        this.lesson_data = response
       } else {
-        const length = response[0].length
-        let content = {
-          word_translation: [],
-          exercise_type: consts.ExerciseType.TRANSLATE_WORDS_ORAL
-        }
+        this.lesson_data = response
+        const length = this.lesson_data[0]['word_translation'].length
 
         for (let i = 0; i < length; ++i) {
-          content.word_translation.push({
-            es: response[0][i].trim(),
-            en: response[1][i].trim(),
-            // Extra tags required for the lesson
-            icon: consts.WordStatusMdiIcon.REMEMBERED,
-            color: consts.Color.GOOD,
-            user_knows_translation: true
-          })
+          this.lesson_data[0]['word_translation'][i]['icon'] = consts.WordStatusMdiIcon.REMEMBERED
+          this.lesson_data[0]['word_translation'][i]['color'] = consts.Color.GOOD
+          this.lesson_data[0]['word_translation'][i]['user_knows_translation'] = true
         }
-
-        this.lesson_data = [content]
       }
     },
     isPreRequestRequirementsSatisfied(need_topic = false, need_theme = false, need_sub_theme = false) {
