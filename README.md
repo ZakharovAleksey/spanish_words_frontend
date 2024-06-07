@@ -59,8 +59,10 @@ git push origin --delete gh-pages
 # Remove existing branch remotely
 git branch --delete gh-pages
 # Checkout after run build to local branch 
-git checkout -b gh-pages 
-# Create subtree 'gh-pages' branch and push changes to this branch
+git checkout -b gh-pages
+# !!! AFTER THIS DO THE FIRST 3 STEPS FROM THE "Do the following steps" section above.
+# !!! So, we create 'dist' folder only in gh-pages branch 
+# Create subtree 'gh-pages' branch and push changes to this branch and push only this folder
 git subtree push --prefix dist origin gh-pages
 ```
 
